@@ -2,14 +2,14 @@
 import { ref } from "vue";
 import Indicator from "@/client/ui/Indicator.vue";
 import { useQueryList } from '@/client/query/common'
-import type { IItem } from "@/types";
-const { data: items, isPending, error } = useQueryList<IItem>("items");
+import type { TTarget } from "@/types";
+const { data: targets, isPending, error } = useQueryList<TTarget>("targets");
 </script>
 
 <template>
   <Indicator :isPending="isPending" :error="error"/>
-  <div class="c-items">
-    <div v-if="items" class="min-h-16">
+  <div class="c-targets">
+    <div v-if="targets" class="min-h-16">
       список айтемов
     </div>
     <div class="text-center">

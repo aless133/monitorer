@@ -4,6 +4,15 @@ import { VueQueryPlugin } from '@tanstack/vue-query';
 import App from '@/client/App.vue';
 
 const app = createApp(App);
-app.use(VueQueryPlugin);
+app.use(VueQueryPlugin,{
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        retry: false,      
+        // staleTime: 1000 * 60 * 5, // 5 minutes
+      },
+    },
+  },
+});
 
 app.mount('#app');

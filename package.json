@@ -17,7 +17,8 @@
     "tsx": "^4.4.0",
     "typescript": "^5.3.2",
     "vite-express": "*",
-    "vue": "^3.3.8"
+    "vue": "^3.3.8",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

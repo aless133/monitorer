@@ -16,6 +16,7 @@
     "allowImportingTsExtensions": true,
     "paths": {
       "@/*": ["./src/*"],
+      "@data/*": ["./data/*"],
       "@public/*": ["./public/*"]
     }    
   },
