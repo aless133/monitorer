@@ -9,17 +9,20 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.0.15",
+    "cross-env": "^7.0.3",
     "express": "^4.18.2",
+    "tailwindcss": "^4.0.15",
     "tsx": "^4.4.0",
     "typescript": "^5.3.2",
     "vite-express": "*",
-    "vue": "^3.3.8",
-    "cross-env": "^7.0.3"
+    "vue": "^3.3.8"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.9.3",
     "@vitejs/plugin-vue": "^4.5.0",
+    "daisyui": "^5.0.6",
     "nodemon": "^3.0.1",
     "vite": "^5.0.2",
     "vue-tsc": "^1.8.22"
