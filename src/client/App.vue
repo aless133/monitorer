@@ -4,10 +4,11 @@ import Log from "@/client/components/Log.vue";
 </script>
 
 <template>
-  <Items/>
-  <Log/>
+  <div class="c-app py-4">
+    <Items/>
+    <Log/>
+  </div>
 </template>
 
 <style scoped>
-
 </style>
