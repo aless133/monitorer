@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useQueryList } from '@/client/query/common'
+import type { IItem } from "@/types";
+const { data: items, isPending, error } = useQueryList<IItem>("items");
 
 const count = ref(0);
 </script>
