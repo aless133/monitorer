@@ -1,6 +1,6 @@
 import express from 'express';
 import ViteExpress from 'vite-express';
-import { loopRun } from 'server/loop.ts';
+import { loopRun } from '@/server/loop.ts';
 
 const app = express();
 

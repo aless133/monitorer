@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Items from "./components/Items.vue";
-import Log from "./components/Log.vue";
+import Items from "@/client/components/Items.vue";
+import Log from "@/client/components/Log.vue";
 </script>
 
 <template>

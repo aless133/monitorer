@@ -1,7 +1,7 @@
-import "./style.css";
+import '@/client/style.css';
 
-import { createApp } from "vue";
+import { createApp } from 'vue';
 
-import App from "./App.vue";
+import App from '@/client/App.vue';
 
-createApp(App).mount("#app");
+createApp(App).mount('#app');
