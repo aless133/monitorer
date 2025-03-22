@@ -1,7 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 const props = defineProps<{ text: string; type: 'info' | 'success' | 'warning' | 'error' }>();
-const alertClass = computed(() => 'alert-' + props.type);
+const alertClass = computed(() => {
+  switch (props.type) {
+    case 'info':
+      return 'alert-info';
+    case 'success':
+      return 'alert-success';
+    case 'warning':
+      return 'alert-warning';
+    case 'error':
+      return 'alert-error';
+    default:
+      return '';
+  }
+});
 </script>
 
 <template>
