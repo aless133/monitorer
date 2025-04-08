@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="c-app py-4">
+  <div class="c-app">
     <RouterView />
   </div>
 </template>
