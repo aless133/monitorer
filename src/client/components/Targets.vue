@@ -7,13 +7,13 @@ const { data: targets, isPending, error } = useQueryList<TTarget>("targets");
 </script>
 
 <template>
-  <Indicator :isPending="isPending" :error="error"/>
   <div class="c-targets">
+    <Indicator :isPending="isPending" :error="error"/>
     <div v-if="targets" class="min-h-16">
       список айтемов
     </div>
     <div class="text-center">
-      <button class="btn btn-primary md:btn-md lg:btn-lg xl:btn-xl">Добавить</button>
+      <RouterLink :to="{name:'target-new'}" class="btn1 !btn-primary">Добавить</RouterLink>
     </div>
   </div>
 </template>
