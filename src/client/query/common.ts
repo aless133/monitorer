@@ -66,6 +66,25 @@ export const useMutationUpdate = <T>(key: string, id: string) => {
   });
 };
 
+export const useMutationUpdateId = <T>(key: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: { id: string; data: Partial<T> }) => {
+      const url = new URL(`${apiUrl}/${key}/${data.id}`);
+      return request<T>(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data.data),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [key] });
+    },
+  });
+};
+
 export const useMutationDelete = (key: string, id: string) => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -55,10 +55,13 @@ function handleSubmit() {
   console.log('validate');
   if (validate()) {
     console.log('validated, mutate!');
-    if (props.initialData)
+    if (props.initialData) {
       update?.mutate(formData.value)
-    else
+    }
+    else {
+      formData.value.active = true;
       create.mutate(formData.value);
+    }
   }
 }
 

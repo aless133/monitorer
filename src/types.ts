@@ -1,4 +1,4 @@
-import { z, ZodSchema } from 'zod';
+import { boolean, z, ZodSchema } from 'zod';
 import { getSource } from './server/sources.ts';
 
 export interface ISource {
@@ -20,6 +20,7 @@ const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
 const BaseTargetSchema = z.object({
   source: z.string(),
   url: z.string().url().optional(),
+  active: z.boolean().default(true),
 });
 
 export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
