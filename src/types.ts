@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getSource } from './server/sources.ts';
 
 export interface ISource {
   name: string;
@@ -8,12 +9,20 @@ export interface ISource {
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
 
-export const TargetSchema = z.object({
-  id: z.string().uuid(),
-  source: z.string(),
-  url: z.string().url().optional(),
-});
-export const TargetNewSchema = TargetSchema.omit({id:true});
+function createTargetSchema(requireId: boolean) {
+  const schema = z.object({
+    ...(requireId ? { id: z.string().uuid() } : {}),
+    source: z.string(),
+    url: z.string().url().optional(),
+  });
+  return schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
+    message: 'URL is required for this source type',
+    path: ['url'],
+  });
+}
+export const TargetSchema = createTargetSchema(true);
+export const TargetNewSchema = createTargetSchema(false);
+
 export type TTarget = z.infer<typeof TargetSchema>;
 
 export const EntitySchemas = {
