@@ -6,7 +6,6 @@ import Log from "@/client/components/Log.vue";
 <template>
   <div class="c-mainview">
     <Targets/>
-    2134123
     <Log/>
   </div>
 </template>

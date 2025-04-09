@@ -1,5 +1,5 @@
-import { apiUrl } from "@/globals";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/vue-query";
+import { apiUrl } from '@/globals';
+import { useQueryClient, useQuery, useMutation } from '@tanstack/vue-query';
 
 interface QueryParams {
   [key: string]: string | number | boolean;
@@ -34,9 +34,9 @@ export const useMutationCreate = <T>(key: string) => {
     mutationFn: async (data: Partial<T>) => {
       const url = new URL(`${apiUrl}/${key}`);
       return request<T>(url, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -53,9 +53,9 @@ export const useMutationUpdate = <T>(key: string, id: string) => {
     mutationFn: async (data: Partial<T>) => {
       const url = new URL(`${apiUrl}/${key}/${id}`);
       return request<T>(url, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -72,7 +72,7 @@ export const useMutationDelete = (key: string, id: string) => {
     mutationFn: async () => {
       const url = new URL(`${apiUrl}/${key}/${id}`);
       return request<null>(url, {
-        method: "DELETE",
+        method: 'DELETE',
       });
     },
     onSuccess: () => {
@@ -92,5 +92,6 @@ export const request = async <T>(url: URL, init?: RequestInit) => {
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
+  if (init?.method == 'DELETE') return null;
   return response.json() as Promise<T>;
 };

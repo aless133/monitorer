@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { getSourcesClient } from '@/server/sources';
 import { TargetCreateSchema, TargetSchema } from '@/types';
 import type { TTarget } from '@/types';
-import { useMutationCreate, useMutationUpdate } from '@/client/query/common';
+import { useMutationCreate, useMutationUpdate, useMutationDelete } from '@/client/query/common';
 import Indicator from '@/client/ui/Indicator.vue';
 
 const props = defineProps<{
@@ -14,20 +14,16 @@ const props = defineProps<{
 const sources = getSourcesClient();
 
 const emit = defineEmits<{
-  (e: 'submit', data: TTarget): void;
-  (e: 'cancel'): void;
+  (e: 'close'): void;
 }>();
 
-// Form state
 const formData = ref<Partial<TTarget>>({
   ...props.initialData,
   url: props.initialData?.url || undefined,
 });
 
-// Form errors
 const errors = ref<Record<string, string>>({});
 
-// Computed property to check if URL is needed
 const needsUrl = computed(() => {
   const selectedSource = sources.find((s) => s.name === formData.value.source);
   return selectedSource?.needsUrl ?? false;
@@ -60,12 +56,15 @@ function handleSubmit() {
   if (validate()) {
     console.log('validated, mutate!');
     if (props.initialData)
-      update.mutate(formData.value)
+      update?.mutate(formData.value)
     else
       create.mutate(formData.value);
-    // console.log('emit', formData.value);
-    // emit('submit', formData.value as TTarget);
   }
+}
+
+function handleDelete() {
+  if (confirm('Подтверждаете удаление?'))
+    del?.mutate();
 }
 
 watch(
@@ -77,22 +76,25 @@ watch(
 );
 
 const create = useMutationCreate<TTarget>("targets");
-console.log(create);
-const update = useMutationUpdate<TTarget>("targets", props.initialData?.id as string);
+const update = props.initialData ? useMutationUpdate<TTarget>("targets", props.initialData.id) : null;
+const del = props.initialData ? useMutationDelete("targets", props.initialData.id) : null;
 
-watch([create.isSuccess,update.isSuccess], ([s1,s2]) => {
-  if (s1 || s2) {
-    console.log('Mutation succeeded!')
-    emit('submit', formData.value as TTarget);
-  }
+watch([
+  () => create.isSuccess.value,
+  () => update?.isSuccess.value,
+  () => del?.isSuccess.value
+], ([s1, s2, s3]) => {
+  if (s1 || s2 || s3)
+    emit('close');
 })
 
 </script>
 
 <template>
   <Indicator :isPending="create.isPending.value" :error="create.error.value" />
-  <Indicator :isPending="update.isPending.value" :error="update.error.value" />
-  <form @submit.prevent="handleSubmit" class="c-targetform card bg-base-100 shadow-xl max-w-sm m-auto">
+  <Indicator v-if="update" :isPending="update.isPending.value" :error="update.error.value" />
+  <Indicator v-if="del" :isPending="del.isPending.value" :error="del.error.value" />
+  <form @submit.prevent="handleSubmit" class="c-targetform card bg-base-100 shadow-xl max-w-lg m-auto">
     <div class="card-body gap-8">
       <h2 class="card-title justify-center">
         {{ initialData?.id ? 'Редактировать цель' : 'Добавить цель' }}
@@ -120,8 +122,9 @@ watch([create.isSuccess,update.isSuccess], ([s1,s2]) => {
       </fieldset>
 
       <div class="card-actions justify-end mt-4">
-        <button type="submit" class="btn btn-primary">OK</button>
-        <button @click="emit('cancel')" type="button" class="btn btn-neutral">Отмена</button>
+        <button type="submit" class="btn btn-success">OK</button>
+        <button v-if="initialData" @click="handleDelete" type="button" class="btn btn-error">Удалить</button>
+        <button @click="emit('close')" type="button" class="btn btn-neutral">Отмена</button>
       </div>
     </div>
   </form>

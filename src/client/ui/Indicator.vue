@@ -9,7 +9,9 @@ const props = defineProps<{
 
 <template>
   <div v-if="isPending || error" class="c-indicator min-h-16">
-    <span v-if="isPending" class="loading loading-spinner loading-xl"></span>
+    <div v-if="isPending" class="text-center">
+      <span class="loading loading-spinner loading-xl"></span>
+    </div>
     <Alert v-if="error" type="error" :text="error.message" />
   </div>
 </template>

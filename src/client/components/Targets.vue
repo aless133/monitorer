@@ -7,7 +7,6 @@ const { data: targets, isPending, error } = useQueryList<TTarget>("targets");
 
 const router = useRouter();
 function handleClick(id: string) {
-  console.log('Form canceled');
   router.push({ name: 'target-update', params: { id } });
 }
 
@@ -17,7 +16,7 @@ function handleClick(id: string) {
   <div class="c-targets">
     <Indicator :isPending="isPending" :error="error" />
     <div v-if="targets" class="min-h-16">
-      <h1 class="text-xl">Список целей</h1>
+      <h1>Список целей</h1>
       <ul class="list bg-base-100 rounded-box shadow-md">
         <li v-for="target in targets" class="list-row">
           <div class="list-col-grow">
@@ -33,7 +32,6 @@ function handleClick(id: string) {
           </button>
         </li>
       </ul>
-      список айтемов
     </div>
     <div class="text-center">
       <RouterLink :to="{ name: 'target-create' }" class="btn1 !btn-primary">Добавить</RouterLink>

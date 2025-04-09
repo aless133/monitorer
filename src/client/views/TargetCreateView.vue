@@ -9,7 +9,7 @@ function handleSubmit(data: TTarget) {
   router.push({ name: 'home' });
 }
 
-function handleCancel() {
+function handleClose() {
   console.log('Form canceled');
   router.push({ name: 'home' });
 }
@@ -17,7 +17,7 @@ function handleCancel() {
 
 <template>
   <div class="c-targetcreateview">
-    <TargetForm @submit="handleSubmit" @cancel="handleCancel"/>
+    <TargetForm @close="handleClose"/>
   </div>
 </template>
 

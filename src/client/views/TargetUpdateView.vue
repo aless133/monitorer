@@ -6,26 +6,19 @@ import { useRoute, useRouter } from 'vue-router';
 import type { TTarget } from "@/types";
 import TargetForm from '@/client/components/TargetForm.vue';
 
-const route = useRoute()
+const route = useRoute();
 const router = useRouter();
-const { data: target, isPending, error } = useQueryOne<TTarget>("targets",route.params.id as string);
+const { data: target, isPending, error } = useQueryOne<TTarget>("targets", route.params.id as string);
 
-
-function handleSubmit(data: TTarget) {
-  console.log('Form submitted:', data);
-  router.push({ name: 'home' });
-}
-
-function handleCancel() {
-  console.log('Form canceled');
+function handleClose() {
   router.push({ name: 'home' });
 }
 </script>
 
 <template>
   <div class="c-targetupdateview">
-    <Indicator :isPending="isPending" :error="error"/>
-    <TargetForm :initial-data="target" @submit="handleSubmit" @cancel="handleCancel"/>
+    <Indicator :isPending="isPending" :error="error" />
+    <TargetForm v-if="target" :initial-data="target" @close="handleClose" />
   </div>
 </template>
 
