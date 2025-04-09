@@ -1,17 +1,24 @@
 import { z } from 'zod';
-import { sources } from '@/globals.ts';
+
+export interface ISource {
+  name: string;
+  needUrl: boolean;
+  run?(params: { url?: string }): Promise<any>;
+}
+
+export interface ISourceClient extends Pick<ISource, 'name' | 'needUrl'> {}
 
 export const TargetSchema = z.object({
   id: z.string().uuid(),
-  source: z.enum(sources),
-  url: z.string().url(),
+  source: z.string(),
+  url: z.string().url().optional(),
 });
 
-export type TTarget = z.infer<typeof TargetSchema>
+export type TTarget = z.infer<typeof TargetSchema>;
 
 export const EntitySchemas = {
   targets: TargetSchema,
-}
+};
 
 export type EntityDataTypes = {
   targets: TTarget;
@@ -19,7 +26,7 @@ export type EntityDataTypes = {
 
 export type TDatabase = {
   [K in keyof EntityDataTypes]: Record<string, EntityDataTypes[K]>;
-}
+};
 
 export type TEntity = keyof TDatabase;
 
