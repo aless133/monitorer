@@ -1,6 +1,6 @@
 const src = {
   name: 'outvin',
-  needUrl: false,
+  needsUrl: false,
 };
 
 export default src;

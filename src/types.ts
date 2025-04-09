@@ -2,18 +2,18 @@ import { z } from 'zod';
 
 export interface ISource {
   name: string;
-  needUrl: boolean;
+  needsUrl: boolean;
   run?(params: { url?: string }): Promise<any>;
 }
 
-export interface ISourceClient extends Pick<ISource, 'name' | 'needUrl'> {}
+export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
 
 export const TargetSchema = z.object({
   id: z.string().uuid(),
   source: z.string(),
   url: z.string().url().optional(),
 });
-
+export const TargetNewSchema = TargetSchema.omit({id:true});
 export type TTarget = z.infer<typeof TargetSchema>;
 
 export const EntitySchemas = {

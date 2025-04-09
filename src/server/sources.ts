@@ -14,5 +14,5 @@ export function getSource(name: string): ISource | undefined {
 }
 
 export function getSourcesClient(): ISourceClient[] {
-  return registeredSources.map((s) => ({ name: s.name, needUrl: s.needUrl }));
+  return registeredSources.map((s) => ({ name: s.name, needsUrl: s.needsUrl }));
 }

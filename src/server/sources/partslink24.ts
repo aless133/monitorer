@@ -1,6 +1,6 @@
 const src = {
   name: 'partslink24',
-  needUrl: false,
+  needsUrl: false,
 };
 
 export default src;

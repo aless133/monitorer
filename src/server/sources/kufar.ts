@@ -1,6 +1,6 @@
 const src = {
   name: 'kufar',
-  needUrl: true,
+  needsUrl: true,
 };
 
 export default src;
