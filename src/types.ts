@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z, ZodSchema } from 'zod';
 import { getSource } from './server/sources.ts';
 
 export interface ISource {
@@ -9,24 +9,30 @@ export interface ISource {
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
 
-function createTargetSchema(requireId: boolean) {
-  const schema = z.object({
-    ...(requireId ? { id: z.string().uuid() } : {}),
-    source: z.string(),
-    url: z.string().url().optional(),
-  });
-  return schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
+///////////////////
+
+const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
+  schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
     message: 'URL is required for this source type',
     path: ['url'],
   });
-}
-export const TargetSchema = createTargetSchema(true);
-export const TargetNewSchema = createTargetSchema(false);
 
+const BaseTargetSchema = z.object({
+  source: z.string(),
+  url: z.string().url().optional(),
+});
+
+export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
+export const TargetCreateSchema = TargetSchemaWithUrlValidation(BaseTargetSchema);
 export type TTarget = z.infer<typeof TargetSchema>;
+
+///////
 
 export const EntitySchemas = {
   targets: TargetSchema,
+};
+export const EntityCreateSchemas = {
+  targets: TargetCreateSchema,
 };
 
 export type EntityDataTypes = {

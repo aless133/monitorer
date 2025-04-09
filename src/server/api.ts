@@ -1,7 +1,7 @@
 import express from 'express';
 import storage from '@/server/storage/storage.ts';
 import type { TDatabase, TEntity, EntityDataTypes, IDbReturn } from '@/types.ts';
-import { EDbErrors, EntitySchemas } from '@/types.ts';
+import { EDbErrors, EntitySchemas, EntityCreateSchemas } from '@/types.ts';
 
 function storageError(res: express.Response, result: IDbReturn) {
   if (result.err) {
@@ -17,6 +17,7 @@ export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', '
   const router = express.Router();
   router.use(express.json());
   const schema = EntitySchemas[entity];
+  const schemaCreate = EntityCreateSchemas[entity];
 
   if (methods.includes('list')) {
     router.get('/', (req, res) => {
@@ -35,8 +36,7 @@ export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', '
 
   if (methods.includes('create')) {
     router.post('/', (req, res) => {
-      const createSchema = schema.omit({ id: true });
-      const v = createSchema.safeParse(req.body);
+      const v = schemaCreate.safeParse(req.body);
       if (!v.success) {
         return res.status(400).json({ errors: v.error.errors });
       }

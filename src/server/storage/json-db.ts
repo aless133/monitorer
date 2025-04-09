@@ -3,7 +3,7 @@ import path from 'path';
 import cfg from '@/../monitorer.config.ts';
 import { randomUUID } from 'crypto';
 import type { TDatabase, TEntity, EntityDataTypes } from '@/types.ts';
-import { EDbErrors, EntitySchemas } from '@/types.ts';
+import { EDbErrors, EntitySchemas, EntityCreateSchemas } from '@/types.ts';
 
 const database: TDatabase = {
   targets: {},
@@ -47,7 +47,7 @@ const db = {
   },
 
   create<K extends keyof EntityDataTypes>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
-    const v = EntitySchemas[entity].safeParse(data);
+    const v = EntityCreateSchemas[entity].safeParse(data);
     if (!v.success) return { err: { code: EDbErrors.INVALID_DATA, message: 'Invalid Entity data' } };
     const id = randomUUID();
     database[entity as TEntity][id] = { ...data, id };

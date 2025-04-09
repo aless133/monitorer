@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="c-app">
+  <div class="c-app prose max-w-none">
     <RouterView />
   </div>
 </template>
