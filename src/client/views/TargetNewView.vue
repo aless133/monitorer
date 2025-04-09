@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import TargetForm from '@/client/components/TargetForm.vue';
 import { TTarget } from '@/types';
+const router = useRouter();
 
 function handleSubmit(data: TTarget) {
   console.log('Form submitted:', data);
+  router.push({ name: 'home' });
   // Handle form submission (API call, etc.)
 }
 </script>
