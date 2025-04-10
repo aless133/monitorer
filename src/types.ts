@@ -16,7 +16,7 @@ const BaseTargetSchema = z.object({
   url: z.string().url().optional(),
   active: z.boolean().default(true),
   interval: z.number().int().nonnegative(),
-  last_call: z.number().int().nonnegative().optional(),
+  last_run: z.number().int().nonnegative().optional(),
 });
 
 const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
@@ -34,7 +34,7 @@ export type TTarget = {
   url?:string,
   active:boolean,
   interval:number,
-  last_call?:number,
+  last_run?:number,
 }
 
 
