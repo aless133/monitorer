@@ -124,6 +124,13 @@ watch([
         <p v-if="errors.url" class="fieldset-label text-error">{{ errors.url }}</p>
       </fieldset>
 
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">Интервал</legend>
+        <input v-model="formData.interval" type="number"
+          :class="`input input-bordered w-full ${errors.interval ? 'input-error' : ''}`" />
+        <p v-if="errors.interval" class="fieldset-label text-error">{{ errors.interval }}</p>
+      </fieldset>      
+
       <div class="card-actions justify-end mt-4">
         <button type="submit" class="btn btn-success">OK</button>
         <button v-if="initialData" @click="handleDelete" type="button" class="btn btn-error">Удалить</button>

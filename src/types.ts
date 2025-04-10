@@ -11,21 +11,32 @@ export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
 
 ///////////////////
 
+const BaseTargetSchema = z.object({
+  source: z.string(),
+  url: z.string().url().optional(),
+  active: z.boolean().default(true),
+  interval: z.number().int().nonnegative(),
+  last_call: z.number().int().nonnegative().optional(),
+});
+
 const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
   schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
     message: 'URL is required for this source type',
     path: ['url'],
   });
 
-const BaseTargetSchema = z.object({
-  source: z.string(),
-  url: z.string().url().optional(),
-  active: z.boolean().default(true),
-});
-
 export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
 export const TargetCreateSchema = TargetSchemaWithUrlValidation(BaseTargetSchema);
-export type TTarget = z.infer<typeof TargetSchema>;
+// export type TTarget = z.infer<typeof TargetSchema>;
+export type TTarget = {
+  id:string,
+  source:string,
+  url?:string,
+  active:boolean,
+  interval:number,
+  last_call?:number,
+}
+
 
 ///////
 

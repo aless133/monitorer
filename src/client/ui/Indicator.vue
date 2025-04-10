@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Alert from "@/client/ui/Alert.vue";
-// import { Ref } from "vue";
+
 const props = defineProps<{
   isPending: boolean, //Ref<false, false> | Ref<true, true>,
   error: Error | null, //Ref<Error, Error> | Ref<null, null>,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Indicator from "@/client/ui/Indicator.vue";
+import Time from "@/client/ui/Time.vue";
 import { useQueryList } from '@/client/query/common'
 import { useRouter } from 'vue-router';
 import type { TTarget } from "@/types";
@@ -39,6 +40,10 @@ async function toggleActive(target: TTarget) {
                   d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
               </svg>
             </a>
+          </div>
+          <div>
+            Интервал: {{ target.interval }}<br>
+            Запущено: <Time :time="target.last_run"/>
           </div>
           <button class="btn btn-square btn-ghost" @click="() => handleClick(target.id)">
             <svg class="size-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
