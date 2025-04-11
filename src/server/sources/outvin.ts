@@ -10,10 +10,10 @@ const src = {
 
 async function run() {
   const { $ } = await fetchHtml(url);
-  const lots: Record<string, TLot> = {};
+  const lots: Omit<TLot, 'id'>[] = [];
   $('.h5 a.badge.badge-success').each((i, el) => {
-    const id = $(el).text();
-    lots[id] = { id, data: { brand: id } };
+    const key = $(el).text();
+    lots.push({ key, data: { brand: key } });
   });
   return lots;
 }

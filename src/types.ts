@@ -4,7 +4,7 @@ import { getSource } from './server/sources.ts';
 export interface ISource {
   name: string;
   needsUrl: boolean;
-  run( url?: string ): Promise<any>;
+  run( url?: string ): Promise<TLot[]>;
 }
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
@@ -44,11 +44,12 @@ export const LotCreateSchema = z.object({
   target: z.string().uuid().optional(),
   data:z.record(z.string()),
 });
-export const LotSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
+export const LotSchema = LotCreateSchema.extend({ id: z.string().uuid() });
 
 export type TLot = {
   id: string;
   target?: string;
+  key: string,
   data: Record<string,string>;
 }
 
