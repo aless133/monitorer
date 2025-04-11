@@ -3,11 +3,12 @@ import path from 'path';
 import cfg from '@/../monitorer.config.ts';
 import { randomUUID } from 'crypto';
 import { TDatabase, TEntity, EntityDataTypes, EDbErrors, EntitySchemas, EntityCreateSchemas } from '@/types.ts';
-import { CustomError } from '@/server/customerror.ts';
+import { MonitorerError } from '@/server/error.ts';
 
 const database: TDatabase = {
   targets: {},
   lots: {},
+  log: {},
 };
 
 function getFileName(entity: TEntity) {
@@ -46,14 +47,14 @@ const db = {
   },
 
   get<K extends TEntity>(entity: K, id: string) {
-    if (!id) throw new CustomError('No id', { entity, id });
-    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
+    if (!id) throw new MonitorerError('No id', { entity, id });
+    if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     return { ...database[entity][id] };
   },
 
   create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
     const v = EntityCreateSchemas[entity].safeParse(data);
-    if (!v.success) throw new CustomError('Invalid Entity data', { entity, error: v.error });
+    if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
     const id = randomUUID();
     database[entity][id] = { ...data, id } as EntityDataTypes[K];
     writeData(entity);
@@ -61,11 +62,11 @@ const db = {
   },
 
   update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
-    if (!id) throw new CustomError('No id', { entity, id });
+    if (!id) throw new MonitorerError('No id', { entity, id });
     const updatedEntity = { ...database[entity][id], ...data, id };
     const v = EntitySchemas[entity].safeParse(updatedEntity);
-    if (!v.success) throw new CustomError('Invalid Entity data', { entity, error: v.error });
-    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
+    if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
+    if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     database[entity][id] = updatedEntity;
     console.log('db update2', database[entity][id]);
     writeData(entity);
@@ -73,8 +74,8 @@ const db = {
   },
 
   delete(entity: TEntity, id: string) {
-    if (!id) throw new CustomError('No id', { entity, id });
-    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
+    if (!id) throw new MonitorerError('No id', { entity, id });
+    if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     delete database[entity][id];
     writeData(entity);
     return {};

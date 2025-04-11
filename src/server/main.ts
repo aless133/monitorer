@@ -3,6 +3,7 @@ import ViteExpress from 'vite-express';
 import { loopRun } from '@/server/loop.ts';
 import { apiRouter } from '@/server/api.ts';
 import { TargetSchema } from '@/types.ts';
+import { errorHandler } from '@/server/error.ts';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/hello', (_, res) => {
 // console.log(JSON.stringify(s.error?.errors));
 
 app.use('/api/targets', apiRouter('targets'));
+app.use(errorHandler);
 
 // app.get('/api1/*', (_, res) => {
 //   res.sendStatus(404);
