@@ -47,29 +47,10 @@ export const useMutationCreate = <T>(key: string) => {
   });
 };
 
-export const useMutationUpdate = <T>(key: string, id: string) => {
+export const useMutationUpdate = <T>(key: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: Partial<T>) => {
-      const url = new URL(`${apiUrl}/${key}/${id}`);
-      return request<T>(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [key] });
-    },
-  });
-};
-
-export const useMutationUpdateId = <T>(key: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: { id: string; data: Partial<T> }) => {
+    mutationFn: async (data:{id: string, data: Partial<T>}) => {
       const url = new URL(`${apiUrl}/${key}/${data.id}`);
       return request<T>(url, {
         method: 'PUT',
@@ -85,10 +66,10 @@ export const useMutationUpdateId = <T>(key: string) => {
   });
 };
 
-export const useMutationDelete = (key: string, id: string) => {
+export const useMutationDelete = (key: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       const url = new URL(`${apiUrl}/${key}/${id}`);
       return request<null>(url, {
         method: 'DELETE',

@@ -12,7 +12,6 @@ const database: TDatabase = {
 };
 
 function getFileName(entity: TEntity) {
-  // console.log(path.resolve(cfg.pathData, entity + '.json'));
   return path.resolve(cfg.pathData, entity + '.json');
 }
 
@@ -68,7 +67,6 @@ const db = {
     if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
     if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     database[entity][id] = updatedEntity;
-    console.log('db update2', database[entity][id]);
     writeData(entity);
     return { ...database[entity][id] };
   },

@@ -11,10 +11,10 @@ function handleClick(id: string) {
   router.push({ name: 'target-update', params: { id } });
 }
 
-import { useMutationUpdateId } from '@/client/query/common';
-const update = useMutationUpdateId<TTarget>("targets");
+import { useMutationUpdate } from '@/client/query/common';
+const update = useMutationUpdate<TTarget>("targets");
 async function toggleActive(target: TTarget) {
-  update.mutate({ id: target.id, data: { ...target, active: !target.active } })
+  update.mutate({ id: target.id, data: { active: !target.active } })
 };
 
 
@@ -43,7 +43,7 @@ async function toggleActive(target: TTarget) {
           </div>
           <div>
             Интервал: {{ target.interval }}<br>
-            Запущено: <Time :time="target.last_run"/>
+            Запущено: <Time :time="target.last_run" />
           </div>
           <button class="btn btn-square btn-ghost" @click="() => handleClick(target.id)">
             <svg class="size-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}

@@ -36,7 +36,7 @@ export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', '
   if (methods.includes('update')) {
     router.put('/:id', (req, res) => {
       const id = req.params.id;
-      const v = schema.safeParse(req.body);
+      const v = schema.partial().safeParse(req.body);
       if (!v.success) throw new MonitorerError('Parse error', v.error);
       const result = storage.update(entity, id, v.data);
       res.json(result);

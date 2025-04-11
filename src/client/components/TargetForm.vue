@@ -56,7 +56,7 @@ function handleSubmit() {
   if (validate()) {
     console.log('validated, mutate!');
     if (props.initialData) {
-      update?.mutate(formData.value)
+      update?.mutate({ id: props.initialData.id, data: formData.value })
     }
     else {
       formData.value.active = true;
@@ -67,7 +67,7 @@ function handleSubmit() {
 
 function handleDelete() {
   if (confirm('Подтверждаете удаление?'))
-    del?.mutate();
+    del?.mutate(props.initialData!.id);
 }
 
 watch(
@@ -79,8 +79,8 @@ watch(
 );
 
 const create = useMutationCreate<TTarget>("targets");
-const update = props.initialData ? useMutationUpdate<TTarget>("targets", props.initialData.id) : null;
-const del = props.initialData ? useMutationDelete("targets", props.initialData.id) : null;
+const update = props.initialData ? useMutationUpdate<TTarget>("targets") : null;
+const del = props.initialData ? useMutationDelete("targets") : null;
 
 watch([
   () => create.isSuccess.value,
@@ -129,7 +129,7 @@ watch([
         <input v-model="formData.interval" type="number"
           :class="`input input-bordered w-full ${errors.interval ? 'input-error' : ''}`" />
         <p v-if="errors.interval" class="fieldset-label text-error">{{ errors.interval }}</p>
-      </fieldset>      
+      </fieldset>
 
       <div class="card-actions justify-end mt-4">
         <button type="submit" class="btn btn-success">OK</button>

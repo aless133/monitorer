@@ -4,7 +4,7 @@ import { getSource } from './server/sources.ts';
 export interface ISource {
   name: string;
   needsUrl: boolean;
-  run( url?: string ): Promise<TLot[]>;
+  run(url?: string): Promise<TLot[]>;
 }
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
@@ -19,39 +19,44 @@ const BaseTargetSchema = z.object({
   last_run: z.number().int().nonnegative().optional(),
 });
 
-const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
-  schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
-    message: 'URL is required for this source type',
-    path: ['url'],
-  });
+export const TargetSchema = BaseTargetSchema.extend({ id: z.string().uuid() });
+export const TargetCreateSchema = BaseTargetSchema;
 
-export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
-export const TargetCreateSchema = TargetSchemaWithUrlValidation(BaseTargetSchema);
+// const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
+//   schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
+//     message: 'URL is required for this source type',
+//     path: ['url'],
+//   });
+
+// export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
+// export const TargetCreateSchema = TargetSchemaWithUrlValidation(BaseTargetSchema);
 // export type TTarget = z.infer<typeof TargetSchema>;
 export type TTarget = {
-  id:string,
-  source:string,
-  url?:string,
-  active:boolean,
-  interval:number,
-  last_run?:number,
-}
-
+  id: string;
+  source: string;
+  url?: string;
+  active: boolean;
+  interval: number;
+  last_run?: number;
+};
 
 ///////
 
 export const LotCreateSchema = z.object({
   target: z.string().uuid().optional(),
-  data:z.record(z.string()),
+  data: z.record(z.string()),
 });
 export const LotSchema = LotCreateSchema.extend({ id: z.string().uuid() });
 
 export type TLot = {
   id: string;
   target?: string;
-  key: string,
-  data: Record<string,string>;
-}
+  key: string;
+  data: Record<string, string>;
+};
+
+export type TLotNew = Omit<TLot, 'id'>;
+
 
 //////
 
