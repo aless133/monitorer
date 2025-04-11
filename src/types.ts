@@ -40,19 +40,37 @@ export type TTarget = {
 
 ///////
 
+export const LotCreateSchema = z.object({
+  target: z.string().uuid().optional(),
+  data:z.record(z.string()),
+});
+export const LotSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
+
+export type TLot = {
+  id: string;
+  target?: string;
+  data: Record<string,string>;
+}
+
+//////
+
 export const EntitySchemas = {
   targets: TargetSchema,
+  lots: LotSchema,
 };
 export const EntityCreateSchemas = {
   targets: TargetCreateSchema,
+  lots: LotCreateSchema,
 };
 
 export type EntityDataTypes = {
   targets: TTarget;
+  lots: TLot;
 };
 
 export type TDatabase = {
-  [K in keyof EntityDataTypes]: Record<string, EntityDataTypes[K]>;
+  targets: Record<string,TTarget>;
+  lots: Record<string,TLot>;
 };
 
 export type TEntity = keyof TDatabase;
@@ -74,3 +92,4 @@ export interface IDbReturn {
 
 //про запас
 //export type TFnVoid = () => void;
+
