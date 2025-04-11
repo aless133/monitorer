@@ -46,34 +46,35 @@ const db = {
   },
 
   get<K extends TEntity>(entity: K, id: string) {
-    if (!id) throw new CustomError('No id',{entity,id});
-    if (!database[entity][id]) throw new CustomError('Entity not found',{entity,id});
+    if (!id) throw new CustomError('No id', { entity, id });
+    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
     return { ...database[entity][id] };
   },
 
   create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
     const v = EntityCreateSchemas[entity].safeParse(data);
-    if (!v.success) throw new CustomError('Invalid Entity data',{entity,error:v.error});
+    if (!v.success) throw new CustomError('Invalid Entity data', { entity, error: v.error });
     const id = randomUUID();
     database[entity][id] = { ...data, id } as EntityDataTypes[K];
     writeData(entity);
     return { ...database[entity][id] };
   },
 
-  update<K extends TEntity>(entity: K, id: string, data: EntityDataTypes[K]) {
-    if (!id) throw new CustomError('No id',{entity,id});
-    const v = EntitySchemas[entity].safeParse(data);
-    if (!v.success)  throw new CustomError('Invalid Entity data',{entity,error:v.error});
-    if (!database[entity][id]) throw new CustomError('Entity not found',{entity,id});
-    database[entity][id] = { ...data, id };
+  update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
+    if (!id) throw new CustomError('No id', { entity, id });
+    const updatedEntity = { ...database[entity][id], ...data, id };
+    const v = EntitySchemas[entity].safeParse(updatedEntity);
+    if (!v.success) throw new CustomError('Invalid Entity data', { entity, error: v.error });
+    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
+    database[entity][id] = updatedEntity;
     console.log('db update2', database[entity][id]);
     writeData(entity);
     return { ...database[entity][id] };
   },
 
   delete(entity: TEntity, id: string) {
-    if (!id) throw new CustomError('No id',{entity,id});
-    if (!database[entity][id]) throw new CustomError('Entity not found',{entity,id});
+    if (!id) throw new CustomError('No id', { entity, id });
+    if (!database[entity][id]) throw new CustomError('Entity not found', { entity, id });
     delete database[entity][id];
     writeData(entity);
     return {};
