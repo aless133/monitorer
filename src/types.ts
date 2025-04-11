@@ -4,7 +4,7 @@ import { getSource } from './server/sources.ts';
 export interface ISource {
   name: string;
   needsUrl: boolean;
-  run?(params: { url?: string }): Promise<any>;
+  run( url?: string ): Promise<any>;
 }
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}

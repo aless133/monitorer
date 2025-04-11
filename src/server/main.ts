@@ -28,6 +28,7 @@ app.use('/api/targets', apiRouter('targets'));
 // });
 
 
+loopRun();
 const loopInterval = setInterval(() => {
   loopRun();
 }, 60 * 1000);
