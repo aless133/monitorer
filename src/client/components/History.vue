@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { TLog, TTarget } from "@/types";
+import type { THistory, TTarget } from "@/types";
 import { refetchInterval } from "@/globals";
 import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
+import Changes from "@/client/ui/Changes.vue";
 import { useRouter } from 'vue-router';
 import { useQueryList, useQueryRecs } from '@/client/query/common'
 const { recs: targetRecs, isPending: targetsIsPending, error: targetsError } = useQueryRecs<TTarget>("targets");
-const { data: log, isPending: logIsPending, error: logError } = useQueryList<TLog>("log", undefined, { refetchInterval });
+const { data: log, isPending: logIsPending, error: logError } = useQueryList<THistory>("history", undefined, { refetchInterval });
 
 const router = useRouter();
 function handleClick(id: string) {
@@ -33,7 +34,7 @@ function handleClick(id: string) {
             <tr v-for="logItem in log" :key="logItem.id">
               <td><Time :time="logItem.dt" /></td>
               <td>{{ targetRecs[logItem.target].source }}</td>
-              <td><Changes</td>
+              <td><Changes :changes="logItem.changes"/></td>
             </tr>
           </tbody>
         </table>

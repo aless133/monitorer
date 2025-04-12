@@ -42,27 +42,56 @@ export type TTarget = {
 
 ///////
 
+export const LotDataScheme = z.record(z.string());
 export const LotCreateSchema = z.object({
   target: z.string().uuid().optional(),
-  data: z.record(z.string()),
+  key: z.string(),
+  data: LotDataScheme,
 });
 export const LotSchema = LotCreateSchema.extend({ id: z.string().uuid() });
 
+export type TLotData = Record<string, string>;
 export type TLot = {
   id: string;
   target?: string;
   key: string;
-  data: Record<string, string>;
+  data: TLotData;
 };
 
 export type TLotNew = Omit<TLot, 'id'>;
+
+///////
+
+export type TChanges = {
+  added: TLotNew[];
+  removed: TLot[];
+  updated: Array<{
+    id: string;
+    key: string;
+    old: TLotData;
+    new: TLotData;
+  }>;
+};
+
+export const ChangesSchema = z.object({
+  added: z.array(LotCreateSchema),
+  removed: z.array(LotSchema),
+  updated: z.array(
+    z.object({
+      id: z.string().uuid(),
+      key: z.string(),
+      old: LotDataScheme,
+      new: LotDataScheme,
+    })
+  ),
+});
 
 //////
 
 export const HistoryCreateSchema = z.object({
   dt: z.number().int().nonnegative().optional(),
   target: z.string().uuid(),
-  changes: ChangesSchema
+  changes: ChangesSchema,
 });
 
 export const HistorySchema = LotCreateSchema.extend({ id: z.string().uuid() });
@@ -79,7 +108,7 @@ export type THistory = {
 export const EntitySchemas = {
   targets: TargetSchema,
   lots: LotSchema,
-  history: HistorySchema,  
+  history: HistorySchema,
 };
 export const EntityCreateSchemas = {
   targets: TargetCreateSchema,
@@ -90,6 +119,7 @@ export const EntityCreateSchemas = {
 export type EntityDataTypes = {
   targets: TTarget;
   lots: TLot;
+  history: THistory;
 };
 
 export type TDatabase = {

@@ -2,13 +2,13 @@ import { apiUrl } from '@/globals.ts';
 import db from '@/server/storage/storage.ts';
 import storage from '@/server/storage/storage.ts';
 import { getSource } from './sources.ts';
-import { TLot, TTarget } from '@/types.ts';
-console.log(apiUrl);
+import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
+console.log('ApiUrl ready on', apiUrl);
 
 function loopRun() {
   const time = Math.floor(Date.now() / 1000);
   const targets = storage.list('targets').filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval < time));
-  console.log(new Date().toLocaleString(),'loop');
+  console.log(new Date().toLocaleString(), 'loop');
 
   const allLots = db.list('lots');
 
@@ -28,7 +28,7 @@ function loopRun() {
           });
         } else {
           const changes = findChanges(lots, res);
-          changes.added.forEach((c) => {
+          changes.added.forEach((c,i) => {
             notify(target, 'added', c);
             db.create('lots', c);
           });
@@ -38,31 +38,32 @@ function loopRun() {
           });
           changes.updated.forEach((c) => {
             notify(target, 'updated', c);
-            db.update('lots', c.old.id, { ...c.new, id: c.old.id });
+            db.update('lots', c.id, { data: c.new });
           });
+          const now = Math.floor(Date.now() / 1000);
+          db.update('targets', target.id, { last_run: now });
           if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
             notify(target, 'nothing changed');
+          else {
+            const history = {
+              dt: now,
+              target: target.id,
+              changes,
+            };
+            db.create('history', history);
+          }
         }
       } catch (err) {
         console.error('looo... oops', err);
       }
-      // console.log(res);
     } else {
       console.error('Source not found', target.id, target.source);
     }
   });
 }
 
-function findChanges(oldData: TLot[], newData: TLot[]) {
-  const changes = {
-    added: [] as TLot[],
-    removed: [] as TLot[],
-    updated: [] as Array<{
-      key: string;
-      old: TLot;
-      new: TLot;
-    }>,
-  };
+function findChanges(oldData: TLot[], newData: TLotNew[]) {
+  const changes: TChanges = { added: [], removed: [], updated: [] };
 
   const oldMap = new Map(oldData.map((item) => [item.key, item]));
   const newMap = new Map(newData.map((item) => [item.key, item]));
@@ -83,9 +84,10 @@ function findChanges(oldData: TLot[], newData: TLot[]) {
 
       if (oldDataStr !== newDataStr) {
         changes.updated.push({
+          id: oldItem.id,
           key: oldItem.key,
-          old: oldItem,
-          new: newItem,
+          old: oldItem.data,
+          new: newItem.data,
         });
       }
     }

@@ -46,12 +46,13 @@ const db = {
   },
 
   get<K extends TEntity>(entity: K, id: string) {
-    if (!id) throw new MonitorerError('No id', { entity, id });
+    if (!id) throw new MonitorerError('get: No id', { entity, id });
     if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     return { ...database[entity][id] };
   },
 
   create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
+    console.log(entity,data);
     const v = EntityCreateSchemas[entity].safeParse(data);
     if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
     const id = randomUUID();
@@ -61,7 +62,7 @@ const db = {
   },
 
   update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
-    if (!id) throw new MonitorerError('No id', { entity, id });
+    if (!id) throw new MonitorerError('update: No id', { entity, id });
     const updatedEntity = { ...database[entity][id], ...data, id };
     const v = EntitySchemas[entity].safeParse(updatedEntity);
     if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
@@ -72,7 +73,7 @@ const db = {
   },
 
   delete(entity: TEntity, id: string) {
-    if (!id) throw new MonitorerError('No id', { entity, id });
+    if (!id) throw new MonitorerError('delete: No id', { entity, id });
     if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     delete database[entity][id];
     writeData(entity);
