@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { TTarget } from "@/types";
+import { refetchInterval } from "@/globals";
 import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
 import { useRouter } from 'vue-router';
 import { useQueryList, useMutationUpdate } from '@/client/query/common'
-const { data: targets, isPending, error, refetch } = useQueryList<TTarget>("targets", undefined, { refetchInterval: 30000 });
+const { data: targets, isPending, error } = useQueryList<TTarget>("targets", undefined, { refetchInterval });
 
 const router = useRouter();
 function handleClick(id: string) {
