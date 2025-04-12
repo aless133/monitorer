@@ -2,8 +2,9 @@ import type { ISource, ISourceClient } from '@/types.ts';
 import kufar from '@/server/sources/kufar.ts';
 import outvin from '@/server/sources/outvin.ts';
 import partslink24 from '@/server/sources/partslink24.ts';
+import kursonliner from '@/server/sources/kurs-onliner.ts';
 
-const registeredSources = [kufar, outvin, partslink24];
+const registeredSources = [kufar, outvin, partslink24, kursonliner];
 
 export function getSources(): ISource[] {
   return registeredSources;

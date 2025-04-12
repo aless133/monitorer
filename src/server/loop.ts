@@ -7,7 +7,7 @@ console.log('ApiUrl ready on', apiUrl);
 
 function loopRun() {
   const time = Math.floor(Date.now() / 1000);
-  const targets = storage.list('targets').filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval < time));
+  const targets = storage.list('targets').filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval <= time));
   console.log(new Date().toLocaleString(), 'loop');
 
   const allLots = db.list('lots');

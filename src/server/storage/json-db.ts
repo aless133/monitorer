@@ -52,7 +52,6 @@ const db = {
   },
 
   create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
-    console.log(entity,data);
     const v = EntityCreateSchemas[entity].safeParse(data);
     if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
     const id = randomUUID();
