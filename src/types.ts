@@ -4,7 +4,7 @@ import { getSource } from './server/sources.ts';
 export interface ISource {
   name: string;
   needsUrl: boolean;
-  run(url?: string): Promise<TLot[]>;
+  run(url?: string): Promise<Omit<TLot, 'id'>[]> | Omit<TLot, 'id'>[];
 }
 
 export interface ISourceClient extends Pick<ISource, 'name' | 'needsUrl'> {}
