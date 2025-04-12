@@ -1,5 +1,6 @@
 import { apiUrl } from '@/globals';
 import { useQueryClient, useQuery, useMutation, UseQueryOptions } from '@tanstack/vue-query';
+import { computed } from 'vue';
 
 interface QueryParams {
   [key: string]: string | number | boolean;
@@ -21,6 +22,46 @@ export const useQueryList = <T>(
     },
     ...queryOptions,
   });
+};
+
+interface Identifiable {
+  id: string | number;
+}
+
+export const useQueryMap = <T extends Identifiable>(
+  key: string,
+  params: QueryParams = {},
+  queryOptions: Omit<UseQueryOptions<T[], Error>, 'queryKey' | 'queryFn'> = {}
+) => {
+  const queryResult = useQueryList(key, params, queryOptions);
+  const map = computed(() => {
+    if (!queryResult.data.value) return new Map<string, T>();
+    return new Map(queryResult.data.value.map((item) => [String(item.id), item]));
+  });
+  return {
+    ...queryResult,
+    map,
+  };
+};
+
+export const useQueryRecs = <T extends Identifiable>(
+  key: string,
+  params: QueryParams = {},
+  queryOptions: Omit<UseQueryOptions<T[], Error>, 'queryKey' | 'queryFn'> = {}
+) => {
+  const queryResult = useQueryList(key, params, queryOptions);
+  const recs = computed(() => {
+    const rec: Record<string, T> = {};
+    if (queryResult.data.value)
+      queryResult.data.value.forEach((i) => {
+        rec[i.id] = i;
+      });
+    return rec;
+  });
+  return {
+    ...queryResult,
+    recs,
+  };
 };
 
 export const useQueryOne = <T>(
