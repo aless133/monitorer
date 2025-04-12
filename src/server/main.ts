@@ -15,6 +15,7 @@ app.get('/hello', (_, res) => {
 // console.log(JSON.stringify(s.error?.errors));
 
 app.use('/api/targets', apiRouter('targets'));
+app.use('/api/lots', apiRouter('lots',['list','get']));
 app.use('/api/history', apiRouter('history',['list','get']));
 app.use(errorHandler);
 
