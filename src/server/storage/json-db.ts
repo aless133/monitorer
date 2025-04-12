@@ -37,8 +37,14 @@ function writeData(entity: TEntity) {
 for (let key in database) readData(key as TEntity);
 
 const db = {
-  list<K extends TEntity>(entity: K): EntityDataTypes[K][] {
-    return Object.keys(database[entity]).map((key) => database[entity][key] as EntityDataTypes[K]);
+  list<K extends TEntity>(entity: K, filter: Partial<EntityDataTypes[K]>): EntityDataTypes[K][] {
+    const items = Object.values(database[entity]) as EntityDataTypes[K][];
+    if (!filter || Object.keys(filter).length === 0) return items;
+    return items.filter((item) => {
+      return Object.entries(filter).every(([key, value]) => {
+        return item[key as keyof EntityDataTypes[K]] === value;
+      });
+    });
   },
 
   map<K extends TEntity>(entity: K): Record<string, EntityDataTypes[K]> {

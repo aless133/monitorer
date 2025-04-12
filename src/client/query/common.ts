@@ -15,8 +15,8 @@ export const useQueryList = <T>(
     queryKey: [key],
     queryFn: async () => {
       const url = new URL(`${apiUrl}/${key}`);
-      Object.keys(params).forEach((param) => {
-        url.searchParams.append(param, String(params[param]));
+      Object.entries(params).forEach(([key, value]) => {
+        if (value != null) url.searchParams.append(key, String(value));
       });
       return request<T[]>(url);
     },

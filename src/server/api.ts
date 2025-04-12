@@ -12,7 +12,8 @@ export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', '
 
   if (methods.includes('list')) {
     router.get('/', (req, res) => {
-      res.json(storage.list(entity));
+      const filters = req.query;
+      res.json(storage.list(entity, filters));
     });
   }
 
@@ -27,7 +28,7 @@ export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', '
   if (methods.includes('create')) {
     router.post('/', (req, res) => {
       const v = schemaCreate.safeParse(req.body);
-      if (!v.success) throw new MonitorerError('Parse error', v.error);      
+      if (!v.success) throw new MonitorerError('Parse error', v.error);
       const result = storage.create(entity, v.data);
       res.status(201).json(result);
     });
