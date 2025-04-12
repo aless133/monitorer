@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Targets from "@/client/components/Targets.vue";
-import Log from "@/client/components/Log.vue";
+import History from "@/client/components/History.vue";
 </script>
 
 <template>
   <div class="c-mainview">
     <Targets/>
-    <Log/>
+    <History/>
   </div>
 </template>
 

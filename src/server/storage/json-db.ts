@@ -8,7 +8,7 @@ import { MonitorerError } from '@/server/error.ts';
 const database: TDatabase = {
   targets: {},
   lots: {},
-  log: {},
+  history: {},
 };
 
 function getFileName(entity: TEntity) {

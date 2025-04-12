@@ -57,16 +57,34 @@ export type TLot = {
 
 export type TLotNew = Omit<TLot, 'id'>;
 
+//////
+
+export const HistoryCreateSchema = z.object({
+  dt: z.number().int().nonnegative().optional(),
+  target: z.string().uuid(),
+  changes: ChangesSchema
+});
+
+export const HistorySchema = LotCreateSchema.extend({ id: z.string().uuid() });
+
+export type THistory = {
+  id: string;
+  dt: number;
+  target: string;
+  changes: TChanges;
+};
 
 //////
 
 export const EntitySchemas = {
   targets: TargetSchema,
   lots: LotSchema,
+  history: HistorySchema,  
 };
 export const EntityCreateSchemas = {
   targets: TargetCreateSchema,
   lots: LotCreateSchema,
+  history: HistoryCreateSchema,
 };
 
 export type EntityDataTypes = {
@@ -75,8 +93,9 @@ export type EntityDataTypes = {
 };
 
 export type TDatabase = {
-  targets: Record<string,TTarget>;
-  lots: Record<string,TLot>;
+  targets: Record<string, TTarget>;
+  lots: Record<string, TLot>;
+  history: Record<string, THistory>;
 };
 
 export type TEntity = keyof TDatabase;
@@ -98,4 +117,3 @@ export interface IDbReturn {
 
 //про запас
 //export type TFnVoid = () => void;
-
