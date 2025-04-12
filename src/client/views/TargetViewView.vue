@@ -24,13 +24,13 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
       </div>
       <div>
         <RouterLink :to="{ name: 'home' }" class="btn btn-neutral">Закрыть</RouterLink>
-      </div>      
+      </div>
     </div>
     <div v-if="lots">
-      <h2 class="mb-0">Лоты</h2>
+      <h2 class="mb-0">Лоты<span v-if="lots">: {{ lots.length }}</span></h2>
       <ul v-if="lots" class="list bg-base-100 rounded-box shadow-md text-base px-4">
         <li v-for="lot in lots" :key="lot.id" class="list-row">
-          <div class="font-bold"> {{ lot.key  }}</div>
+          <div class="font-bold"> {{ lot.key }}</div>
           <pre class="bg-base-300 text-black !my-0">{{ JSON.stringify(lot.data, null, 2) }}</pre>
         </li>
       </ul>
