@@ -1,17 +1,16 @@
 <script setup lang="ts">
+import type { TTarget } from "@/types";
 import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
-import { useQueryList } from '@/client/query/common'
 import { useRouter } from 'vue-router';
-import type { TTarget } from "@/types";
-const { data: targets, isPending, error } = useQueryList<TTarget>("targets");
+import { useQueryList, useMutationUpdate } from '@/client/query/common'
+const { data: targets, isPending, error, refetch } = useQueryList<TTarget>("targets", undefined, { refetchInterval: 30000 });
 
 const router = useRouter();
 function handleClick(id: string) {
   router.push({ name: 'target-update', params: { id } });
 }
 
-import { useMutationUpdate } from '@/client/query/common';
 const update = useMutationUpdate<TTarget>("targets");
 async function toggleActive(target: TTarget) {
   update.mutate({ id: target.id, data: { active: !target.active } })
@@ -29,7 +28,7 @@ async function toggleActive(target: TTarget) {
         <RouterLink :to="{ name: 'target-create' }" class="btn btn-primary">Добавить</RouterLink>
       </div>
       <ul class="list bg-base-100 rounded-box shadow-md text-base px-4">
-        <li v-for="target in targets" class="list-row">
+        <li v-for="target in targets" :key="target.id" class="list-row">
           <div class="list-col-grow">
             <div class="font-semibold text-xl">{{ target.source }}</div>
             <div v-if="target.url" class="break-all opacity-60">{{ target.url }}</div>

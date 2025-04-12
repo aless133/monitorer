@@ -1,11 +1,15 @@
 import { apiUrl } from '@/globals';
-import { useQueryClient, useQuery, useMutation } from '@tanstack/vue-query';
+import { useQueryClient, useQuery, useMutation, UseQueryOptions } from '@tanstack/vue-query';
 
 interface QueryParams {
   [key: string]: string | number | boolean;
 }
 
-export const useQueryList = <T>(key: string, params: QueryParams = {}) => {
+export const useQueryList = <T>(
+  key: string,
+  params: QueryParams = {},
+  queryOptions: Omit<UseQueryOptions<T[], Error>, 'queryKey' | 'queryFn'> = {}
+) => {
   return useQuery({
     queryKey: [key],
     queryFn: async () => {
@@ -15,16 +19,22 @@ export const useQueryList = <T>(key: string, params: QueryParams = {}) => {
       });
       return request<T[]>(url);
     },
+    ...queryOptions,
   });
 };
 
-export const useQueryOne = <T>(key: string, id: string) => {
+export const useQueryOne = <T>(
+  key: string,
+  id: string,
+  queryOptions: Omit<UseQueryOptions<T[], Error>, 'queryKey' | 'queryFn'> = {}
+) => {
   return useQuery({
     queryKey: [key, id],
     queryFn: async () => {
       const url = new URL(`${apiUrl}/${key}/${id}`);
       return request<T>(url);
     },
+    ...queryOptions,
   });
 };
 
@@ -50,7 +60,7 @@ export const useMutationCreate = <T>(key: string) => {
 export const useMutationUpdate = <T>(key: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data:{id: string, data: Partial<T>}) => {
+    mutationFn: async (data: { id: string; data: Partial<T> }) => {
       const url = new URL(`${apiUrl}/${key}/${data.id}`);
       return request<T>(url, {
         method: 'PUT',
