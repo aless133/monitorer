@@ -45,6 +45,7 @@ const loopInt = setInterval(async () => {
   await loopRun();
 }, loopInterval);
 
-ViteExpress.listen(app, 3000, () => {
-  console.log('Monitorer is listening on port 3000...');
+const port = parseInt(process.env.PORT || '3000');
+ViteExpress.listen(app, port, () => {
+  console.log('Monitorer is listening on port '+port+'...');
 });
