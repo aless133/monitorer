@@ -2,6 +2,7 @@ import db from '@/server/storage/storage.ts';
 import storage from '@/server/storage/storage.ts';
 import { getSource } from './sources.ts';
 import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
+import { notify as telegramNotify } from '@/server/notify/telegram.ts';
 
 function loopRun() {
   const time = Math.floor(Date.now() / 1000);
@@ -41,7 +42,7 @@ function loopRun() {
           const now = Math.floor(Date.now() / 1000);
           db.update('targets', target.id, { last_run: now });
           if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
-            console.log(target, 'nothing changed');
+            console.log(target.source, 'nothing changed');
           else {
             const history = {
               dt: now,
@@ -95,6 +96,8 @@ function findChanges(oldData: TLot[], newData: TLotNew[]) {
 
 function notify(target: TTarget, text: string, data?: any) {
   console.log(new Date().toLocaleString(), target.id, target.source, target.url, text, data);
+  const n = { text, target, data };
+  telegramNotify(JSON.stringify(n));
 }
 
 export { loopRun };
