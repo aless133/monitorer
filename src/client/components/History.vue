@@ -5,6 +5,7 @@ import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
 import Changes from "@/client/ui/Changes.vue";
 import { useQueryList, useQueryRecs } from '@/client/query/common'
+import { computed } from "vue";
 
 const props = defineProps<{
   targetId?: string;
@@ -13,6 +14,11 @@ const props = defineProps<{
 const { recs: targetsRecs, isPending: targetsIsPending, error: targetsError } = useQueryRecs<TTarget>("targets");
 const { data: history, isPending: historyIsPending, error: historyError } =
   useQueryList<THistory>("history", props.targetId ? { target: props.targetId } : {}, { refetchInterval });
+
+const hist = computed(() => {
+  if (!history.value) return [];
+  return [...history.value].sort((a, b) => b.dt-a.dt);
+});
 
 </script>
 
@@ -31,7 +37,7 @@ const { data: history, isPending: historyIsPending, error: historyError } =
             </tr>
           </thead>
           <tbody>
-            <tr v-for="historyItem in history" :key="historyItem.id">
+            <tr v-for="historyItem in hist" :key="historyItem.id">
               <td><Time :time="historyItem.dt" /></td>
               <td v-if="!targetId">{{ targetsRecs[historyItem.target]?.source }}</td>
               <td>
