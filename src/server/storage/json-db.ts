@@ -2,8 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import cfg from '@/../monitorer.config.ts';
 import { randomUUID } from 'crypto';
-import { TDatabase, TEntity, EntityDataTypes, EDbErrors, EntitySchemas, EntityCreateSchemas } from '@/types.ts';
+import { TEntity, EntityDataTypes, EDbErrors, EntitySchemas, EntityCreateSchemas, TTarget, TLot, THistory } from '@/types.ts';
 import { MonitorerError } from '@/server/error.ts';
+
+type TDatabase = {
+  targets: Record<string, TTarget>;
+  lots: Record<string, TLot>;
+  history: Record<string, THistory>;
+};
 
 const database: TDatabase = {
   targets: {},
@@ -37,7 +43,7 @@ function writeData(entity: TEntity) {
 for (let key in database) readData(key as TEntity);
 
 const db = {
-  list<K extends TEntity>(entity: K, filter?: Partial<EntityDataTypes[K]>): EntityDataTypes[K][] {
+  async list<K extends TEntity>(entity: K, filter?: Partial<EntityDataTypes[K]>): Promise<EntityDataTypes[K][]> {
     const items = Object.values(database[entity]) as EntityDataTypes[K][];
     if (!filter || Object.keys(filter).length === 0) return items;
     return items.filter((item) => {
@@ -47,17 +53,13 @@ const db = {
     });
   },
 
-  map<K extends TEntity>(entity: K): Record<string, EntityDataTypes[K]> {
-    return { ...database[entity] } as Record<string, EntityDataTypes[K]>;
-  },
-
-  get<K extends TEntity>(entity: K, id: string) {
+  async get<K extends TEntity>(entity: K, id: string) {
     if (!id) throw new MonitorerError('get: No id', { entity, id });
     if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     return { ...database[entity][id] };
   },
 
-  create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
+  async create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
     const v = EntityCreateSchemas[entity].safeParse(data);
     if (!v.success) throw new MonitorerError('Invalid Entity data', { entity, error: v.error });
     const id = randomUUID();
@@ -66,7 +68,7 @@ const db = {
     return { ...database[entity][id] };
   },
 
-  update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
+  async update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
     if (!id) throw new MonitorerError('update: No id', { entity, id });
     const updatedEntity = { ...database[entity][id], ...data, id };
     const v = EntitySchemas[entity].safeParse(updatedEntity);
@@ -77,7 +79,7 @@ const db = {
     return { ...database[entity][id] };
   },
 
-  delete(entity: TEntity, id: string) {
+  async delete(entity: TEntity, id: string) {
     if (!id) throw new MonitorerError('delete: No id', { entity, id });
     if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
     delete database[entity][id];

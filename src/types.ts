@@ -1,5 +1,4 @@
-import { boolean, z, ZodSchema } from 'zod';
-import { getSource } from './server/sources.ts';
+import { z, ZodSchema } from 'zod';
 
 export interface ISource {
   name: string;
@@ -20,18 +19,9 @@ const BaseTargetSchema = z.object({
   last_update: z.number().int().nonnegative().optional(),
 });
 
-export const TargetSchema = BaseTargetSchema.extend({ id: z.string().uuid() });
+export const TargetSchema = BaseTargetSchema.extend({ id: z.string() });
 export const TargetCreateSchema = BaseTargetSchema;
 
-// const TargetSchemaWithUrlValidation = (schema: ZodSchema) =>
-//   schema.refine((data) => !getSource(data.source)?.needsUrl || data.url, {
-//     message: 'URL is required for this source type',
-//     path: ['url'],
-//   });
-
-// export const TargetSchema = TargetSchemaWithUrlValidation(BaseTargetSchema.extend({ id: z.string().uuid() }));
-// export const TargetCreateSchema = TargetSchemaWithUrlValidation(BaseTargetSchema);
-// export type TTarget = z.infer<typeof TargetSchema>;
 export type TTarget = {
   id: string;
   source: string;
@@ -46,11 +36,11 @@ export type TTarget = {
 
 export const LotDataScheme = z.record(z.string());
 export const LotCreateSchema = z.object({
-  target: z.string().uuid().optional(),
+  target: z.string().optional(),
   key: z.string(),
   data: LotDataScheme,
 });
-export const LotSchema = LotCreateSchema.extend({ id: z.string().uuid() });
+export const LotSchema = LotCreateSchema.extend({ id: z.string() });
 
 export type TLotData = Record<string, string>;
 export type TLot = {
@@ -80,7 +70,7 @@ export const ChangesSchema = z.object({
   removed: z.array(LotSchema),
   updated: z.array(
     z.object({
-      id: z.string().uuid(),
+      id: z.string(),
       key: z.string(),
       old: LotDataScheme,
       new: LotDataScheme,
@@ -92,11 +82,11 @@ export const ChangesSchema = z.object({
 
 export const HistoryCreateSchema = z.object({
   dt: z.number().int().nonnegative().optional(),
-  target: z.string().uuid(),
+  target: z.string(),
   changes: ChangesSchema,
 });
 
-export const HistorySchema = LotCreateSchema.extend({ id: z.string().uuid() });
+export const HistorySchema = LotCreateSchema.extend({ id: z.string() });
 
 export type THistory = {
   id: string;
@@ -124,28 +114,4 @@ export type EntityDataTypes = {
   history: THistory;
 };
 
-export type TDatabase = {
-  targets: Record<string, TTarget>;
-  lots: Record<string, TLot>;
-  history: Record<string, THistory>;
-};
-
-export type TEntity = keyof TDatabase;
-
-export enum EDbErrors {
-  INVALID_DATA = 1,
-  NOT_FOUND = 2,
-}
-
-interface IError {
-  code: number | EDbErrors;
-  message: string;
-}
-
-export interface IDbReturn {
-  err?: IError;
-  data?: any;
-}
-
-//про запас
-//export type TFnVoid = () => void;
+export type TEntity = keyof EntityDataTypes;

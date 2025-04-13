@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { z } from 'zod';
-import { getSourcesClient } from '@/server/sources';
+import { getSourcesClient } from '@/server/sources/sources';
 import { TargetCreateSchema, TargetSchema } from '@/types';
 import type { TTarget } from '@/types';
 import { useMutationCreate, useMutationUpdate, useMutationDelete } from '@/client/query/common';

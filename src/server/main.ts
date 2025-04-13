@@ -13,6 +13,13 @@ app.get('/hello', (_, res) => {
   res.send('Hello Vite + Vue + TypeScript!');
 });
 
+// import {database } from '@/server/storage/firebase.ts';
+// // console.log(database);
+
+// const collectionRef = database.collection('target');
+// const docRef = await collectionRef.add({name:123});
+// console.log(docRef.id);
+
 // const s=TargetSchema.safeParse({"id":"---f81d4fae-7dec-11d0-a765-00a0c91e6bf6","source":"kufar","url":"http://google.com"});
 // console.log(JSON.stringify(s.error?.errors));
 
@@ -34,8 +41,8 @@ app.use(errorHandler);
 // });
 
 loopRun();
-const loopInt = setInterval(() => {
-  loopRun();
+const loopInt = setInterval(async () => {
+  await loopRun();
 }, loopInterval);
 
 ViteExpress.listen(app, 3000, () => {

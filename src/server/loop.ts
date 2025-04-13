@@ -1,15 +1,15 @@
-import db from '@/server/storage/storage.ts';
-import storage from '@/server/storage/storage.ts';
-import { getSource } from './sources.ts';
+import getDB from '@/server/storage/storage.ts';
+import { getSource } from '@/server/sources/sources.ts';
 import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
 import { notify as telegramNotify } from '@/server/notify/telegram.ts';
+const db=getDB();
 
-function loopRun() {
+async function loopRun() {
   const time = Math.floor(Date.now() / 1000);
-  const targets = storage.list('targets').filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval <= time));
+  const targets = (await db.list('targets')).filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval <= time));
   console.log(new Date().toLocaleString(), 'loop');
 
-  const allLots = db.list('lots');
+  const allLots = await db.list('lots');
 
   targets.forEach(async (target) => {
     const src = getSource(target.source);
