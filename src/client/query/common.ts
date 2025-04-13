@@ -3,7 +3,7 @@ import { useQueryClient, useQuery, useMutation, UseQueryOptions } from '@tanstac
 import { computed } from 'vue';
 
 interface QueryParams {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export const useQueryList = <T>(

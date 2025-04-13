@@ -2,6 +2,7 @@
 
 import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
+import History from "@/client/components/History.vue";
 import { useQueryList, useQueryOne } from '@/client/query/common'
 import { useRoute, useRouter } from 'vue-router';
 import type { TLot, TTarget } from "@/types";
@@ -35,6 +36,7 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
         </li>
       </ul>
     </div>
+    <History :targetId="targetId"/>
     <div>
       <RouterLink :to="{ name: 'home' }" class="btn btn-neutral">Закрыть</RouterLink>
     </div>
