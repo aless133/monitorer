@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 vite.config.ts.timestamp-*.mjs 
 *.env
+monitorer-service-account.json
 
 /data

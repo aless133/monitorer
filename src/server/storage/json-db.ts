@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import cfg from '@/../monitorer.config.ts';
 import { randomUUID } from 'crypto';
-import { TEntity, EntityDataTypes, EDbErrors, EntitySchemas, EntityCreateSchemas, TTarget, TLot, THistory } from '@/types.ts';
+import { TEntity, EntityDataTypes, EntitySchemas, EntityCreateSchemas, TTarget, TLot, THistory } from '@/types.ts';
 import { MonitorerError } from '@/server/error.ts';
 
 type TDatabase = {
