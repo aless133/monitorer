@@ -12,5 +12,6 @@ export default defineConfig({
       '@data': path.resolve(__dirname, './data'),
       '@public': path.resolve(__dirname, './public'),
     },
-  },  
+  }, 
+  envPrefix: 'MONITORER_',
 });

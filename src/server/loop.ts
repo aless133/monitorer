@@ -1,9 +1,7 @@
-import { apiUrl } from '@/globals.ts';
 import db from '@/server/storage/storage.ts';
 import storage from '@/server/storage/storage.ts';
 import { getSource } from './sources.ts';
 import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
-console.log('ApiUrl ready on', apiUrl);
 
 function loopRun() {
   const time = Math.floor(Date.now() / 1000);
@@ -43,7 +41,7 @@ function loopRun() {
           const now = Math.floor(Date.now() / 1000);
           db.update('targets', target.id, { last_run: now });
           if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
-            notify(target, 'nothing changed');
+            console.log(target, 'nothing changed');
           else {
             const history = {
               dt: now,

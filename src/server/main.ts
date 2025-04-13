@@ -1,9 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import ViteExpress from 'vite-express';
-import { loopRun } from '@/server/loop.ts';
 import { apiRouter } from '@/server/api.ts';
-import { TargetSchema } from '@/types.ts';
 import { errorHandler } from '@/server/error.ts';
+import { loopRun } from '@/server/loop.ts';
+import { loopInterval } from '@/globals.ts';
 
 const app = express();
 
@@ -15,8 +17,8 @@ app.get('/hello', (_, res) => {
 // console.log(JSON.stringify(s.error?.errors));
 
 app.use('/api/targets', apiRouter('targets'));
-app.use('/api/lots', apiRouter('lots',['list','get']));
-app.use('/api/history', apiRouter('history',['list','get']));
+app.use('/api/lots', apiRouter('lots', ['list', 'get']));
+app.use('/api/history', apiRouter('history', ['list', 'get']));
 app.use(errorHandler);
 
 // app.get('/api1/*', (_, res) => {
@@ -31,10 +33,11 @@ app.use(errorHandler);
 //   res.status(404).send();
 // });
 
-
 loopRun();
-const loopInterval = setInterval(() => {
+const loopInt = setInterval(() => {
   loopRun();
-}, 10 * 1000);
+}, loopInterval);
 
-ViteExpress.listen(app, 3000, () => console.log('Server is listening on port 3000...'));
+ViteExpress.listen(app, 3000, () => {
+  console.log('Monitorer is listening on port 3000...');
+});
