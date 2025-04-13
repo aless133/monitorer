@@ -16,7 +16,9 @@ function loopRun() {
     const lots = allLots.filter((l) => l.target === target.id);
     if (src) {
       try {
+        const now = Math.floor(Date.now() / 1000);
         const res = await src.run(target.url);
+        const targetUpdate:Partial<TTarget> = {last_run:now};
         res.forEach((r) => {
           r.target = target.id;
         });
@@ -27,7 +29,7 @@ function loopRun() {
           });
         } else {
           const changes = findChanges(lots, res);
-          changes.added.forEach((c,i) => {
+          changes.added.forEach((c, i) => {
             notify(target, 'added', c);
             db.create('lots', c);
           });
@@ -39,11 +41,10 @@ function loopRun() {
             notify(target, 'updated', c);
             db.update('lots', c.id, { data: c.new });
           });
-          const now = Math.floor(Date.now() / 1000);
-          db.update('targets', target.id, { last_run: now });
           if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
             console.log(target.source, 'nothing changed');
           else {
+            targetUpdate.last_update = now;
             const history = {
               dt: now,
               target: target.id,
@@ -51,6 +52,7 @@ function loopRun() {
             };
             db.create('history', history);
           }
+          db.update('targets', target.id, targetUpdate);
         }
       } catch (err) {
         console.error('looo... oops', err);

@@ -17,6 +17,7 @@ const BaseTargetSchema = z.object({
   active: z.boolean().default(true),
   interval: z.number().int().nonnegative(),
   last_run: z.number().int().nonnegative().optional(),
+  last_update: z.number().int().nonnegative().optional(),
 });
 
 export const TargetSchema = BaseTargetSchema.extend({ id: z.string().uuid() });
@@ -38,6 +39,7 @@ export type TTarget = {
   active: boolean;
   interval: number;
   last_run?: number;
+  last_update?: number;
 };
 
 ///////

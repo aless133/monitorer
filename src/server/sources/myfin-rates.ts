@@ -3,7 +3,7 @@ import { TLot } from '@/types.ts';
 
 const url = 'https://admin.myfin.by/outer/informer/minsk';
 const src = {
-  name: 'Лучшие курсы myfin.by',
+  name: 'myfin-rates',
   needsUrl: false,
   run,
 };

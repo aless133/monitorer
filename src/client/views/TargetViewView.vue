@@ -22,6 +22,7 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
         <div class="font-bold">Источник: {{ target.source }}</div>
         <div>Интервал: {{ target.interval }}</div>
         <div>Запущено: <Time :time="target.last_run" /></div>
+        <div>Обновлено: <Time :time="target.last_update" /></div>
       </div>
       <div>
         <RouterLink :to="{ name: 'home' }" class="btn btn-neutral">Закрыть</RouterLink>
