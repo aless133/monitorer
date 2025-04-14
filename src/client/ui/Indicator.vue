@@ -1,10 +1,24 @@
 <script setup lang="ts">
-import Alert from "@/client/ui/Alert.vue";
+import Alert from '@/client/ui/Alert.vue';
+import { useRouter } from 'vue-router';
+import { ErrAuth } from '@/globals';
+import { watch } from 'vue';
+const router = useRouter();
 
 const props = defineProps<{
-  isPending: boolean, //Ref<false, false> | Ref<true, true>,
-  error: Error | null, //Ref<Error, Error> | Ref<null, null>,
-}>()
+  isPending: boolean; //Ref<false, false> | Ref<true, true>,
+  error: Error | null; //Ref<Error, Error> | Ref<null, null>,
+}>();
+
+watch(
+  () => props.error,
+  (e) => {
+    if (e && e.message == ErrAuth) {
+      console.error('ErrAuth detected');
+      router.push('login');
+    }
+  }
+);
 </script>
 
 <template>

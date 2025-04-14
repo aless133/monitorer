@@ -1,4 +1,4 @@
-import { apiUrl } from '@/globals';
+import { apiUrl, ErrAuth } from '@/globals';
 import { useQueryClient, useQuery, useMutation, UseQueryOptions } from '@tanstack/vue-query';
 import { computed } from 'vue';
 
@@ -135,6 +135,9 @@ export const useMutationDelete = (key: string) => {
 export const request = async <T>(url: URL, init?: RequestInit) => {
   const response = await fetch(url.toString(), init);
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error(ErrAuth);
+    }
     let errorMessage = `Ошибка запроса ${url.toString()} - ${response.status} ${response.statusText}`;
     const errorText = await response.text();
     if (errorText) {
