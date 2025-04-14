@@ -25,10 +25,10 @@ const hist = computed(() => {
 <template>
   <div class="c-history">
     <Indicator :isPending="targetsIsPending || historyIsPending" :error="targetsError || historyError" />
-    <div v-if="history" class="min-h-16">
-      <h2 class="mb-0">Журнал</h2>
-      <div class="overflow-x-auto">
-        <table class="table mt-0">
+    <div v-if="history && history.length" class="indicator-ready">
+      <h2 class="box1-title">Журнал</h2>
+      <div class="box1-inner overflow-x-auto">
+        <table class="table mt-0 mb-0">
           <thead>
             <tr>
               <th>Время</th>

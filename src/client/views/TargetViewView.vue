@@ -17,8 +17,8 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
 <template>
   <div class="c-targetviewview">
     <Indicator :isPending="targetIsPending || lotsIsPending" :error="targetError || lotsErrors" />
-    <div v-if="target" class="flex gap-8">
-      <div class="rounded-box shadow-md p-4 grow-1">
+    <div v-if="target" class="flex gap-8 mb-4">
+      <div class="box1-inner text-lg grow-1">
         <div class="font-bold">Источник: {{ target.source }}</div>
         <div>Интервал: {{ target.interval }}</div>
         <div>Запущено: <Time :time="target.last_run" /></div>
@@ -28,9 +28,9 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
         <RouterLink :to="{ name: 'home' }" class="btn btn-neutral">Закрыть</RouterLink>
       </div>
     </div>
-    <div v-if="lots">
-      <h2 class="mb-0">Лоты<span v-if="lots">: {{ lots.length }}</span></h2>
-      <ul v-if="lots" class="list bg-base-100 rounded-box shadow-md text-base px-4">
+    <div v-if="lots" class="box1">
+      <h2 class="box1-title">Лоты<span v-if="lots">: {{ lots.length }}</span></h2>
+      <ul class="list box1-inner text-base px-4">
         <li v-for="lot in lots" :key="lot.id" class="list-row">
           <div class="font-bold"> {{ lot.key }}</div>
           <div class="bg-base-300 text-black p-2">

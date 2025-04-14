@@ -17,12 +17,12 @@ async function toggleActive(target: TTarget) {
 <template>
   <div class="c-targets">
     <Indicator :isPending="isPending" :error="error" />
-    <div v-if="targets" class="min-h-16">
+    <div v-if="targets" class="indicator-ready box1">
       <div class="flex justify-between my-5">
         <h1 class="mb-0">Список целей</h1>
         <RouterLink :to="{ name: 'target-create' }" class="btn btn-primary">Добавить</RouterLink>
       </div>
-      <ul class="list bg-base-100 rounded-box shadow-md text-base px-4">
+      <ul class="list text-base box1-inner !py-0 !px-2">
         <li v-for="target in targets" :key="target.id" class="list-row flex flex-wrap">
           <RouterLink :to="{ name: 'target-view', params: {id:target.id} }" class="btn btn-square btn-ghost">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}

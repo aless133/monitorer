@@ -2,13 +2,37 @@
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
+body {
+  @apply bg-base-300;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1rem 1rem;
-  /* text-align: center; */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;   
 }
 
 .btn1 {
   @apply btn md:btn-md lg:btn-lg xl:btn-xl;
+}
+
+.fieldset {
+  @apply text-base;
+}
+
+.box1 {
+  @apply mb-6;
+}
+.box1-title {
+  @apply mt-0 mb-4 flex;
+}
+.box1-inner {
+  @apply bg-base-100 rounded-box shadow-md px-4 py-4;
+}
+
+.indicator-ready {
+  @apply min-h-16;
 }
