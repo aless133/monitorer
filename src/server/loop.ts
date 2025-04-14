@@ -2,18 +2,18 @@ import getDB from '@/server/storage/storage.ts';
 import { getSource } from '@/server/sources/sources.ts';
 import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
 import { notify as telegramNotify } from '@/server/notify/telegram.ts';
-const db=getDB();
+const db = getDB();
 
 async function loopRun() {
   const time = Math.floor(Date.now() / 1000);
   console.log(new Date().toLocaleString(), 'loop');
-  const targets = (await db.list('targets',{active:true})).filter((t) => (!t.last_run || t.last_run + t.interval <= time));
+  const targets = await db.list('targets', { active: true, next_run: { operator: '<=', value: time } });
   if (!targets.length) {
     console.log('tagets empty');
     return;
   }
 
-  const allLots = await db.list('lots',{target:{operator:'in',value:targets.map(t=>t.id)}});
+  const allLots = await db.list('lots', { target: { operator: 'in', value: targets.map((t) => t.id) } });
 
   targets.forEach(async (target) => {
     const src = getSource(target.source);
@@ -21,8 +21,9 @@ async function loopRun() {
     if (src) {
       try {
         const now = Math.floor(Date.now() / 1000);
+        const targetUpdate: Partial<TTarget> = { last_run: now, next_run: now + target.interval };
         const res = await src.run(target.url);
-        const targetUpdate:Partial<TTarget> = {last_run:now};
+        console.log('res',res);
         res.forEach((r) => {
           r.target = target.id;
         });
@@ -56,8 +57,9 @@ async function loopRun() {
             };
             db.create('history', history);
           }
-          db.update('targets', target.id, targetUpdate);
         }
+        console.log('targetUpdate',targetUpdate);
+        db.update('targets', target.id, targetUpdate);
       } catch (err) {
         console.error('looo... oops', err);
       }

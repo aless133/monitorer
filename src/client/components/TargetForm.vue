@@ -39,6 +39,7 @@ function validate(): boolean {
   try {
     if (!props.initialData) TargetCreateSchema.parse(formData.value);
     else TargetSchema.parse(formData.value);
+    formData.value.next_run = (formData.value.last_run||0) + (formData.value.interval || 0);
     errors.value = {};
     console.log('validated');
     return true;

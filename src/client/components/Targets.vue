@@ -44,7 +44,8 @@ async function toggleActive(target: TTarget) {
           </div>
           <div class="w-full sm:w-auto">
             Интервал: {{ target.interval }}<br>
-            Запущено: <Time :time="target.last_run" />
+            Запущено: <Time :time="target.last_run" /><br>
+            Следующий: <Time :time="target.next_run" />
           </div>
           <RouterLink :to="{ name: 'target-update', params: {id:target.id} }" class="btn btn-square btn-ghost ms-auto sm:ms-0">
             <svg class="size-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
