@@ -2,7 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import cfg from '@/../monitorer.config.ts';
 import { randomUUID } from 'crypto';
-import { TEntity, EntityDataTypes, EntitySchemas, EntityCreateSchemas, TTarget, TLot, THistory } from '@/types.ts';
+import {
+  TEntity,
+  EntityDataTypes,
+  EntitySchemas,
+  EntityCreateSchemas,
+  TTarget,
+  TLot,
+  THistory,
+  TFilter,
+  TFilterCondition,
+} from '@/types.ts';
 import { MonitorerError } from '@/server/error.ts';
 
 type TDatabase = {
@@ -10,21 +20,21 @@ type TDatabase = {
   lots: Record<string, TLot>;
   history: Record<string, THistory>;
 };
-console.trace('json-db');
+// console.trace('json-db');
 
 function getDb() {
-  console.trace('json-db getDb');
-  
-  const database:TDatabase = {
+  console.log('json-db getDb');
+
+  const database: TDatabase = {
     targets: {},
     lots: {},
     history: {},
-  };  
+  };
 
   function getFileName(entity: TEntity) {
     return path.resolve(cfg.pathData, entity + '.json');
   }
-  
+
   function parseEntityData<K extends TEntity>(entity: K, data: string): TDatabase[K] {
     return JSON.parse(data) as TDatabase[K];
   }
@@ -32,7 +42,7 @@ function getDb() {
   function readData<K extends TEntity>(entity: K) {
     const file = getFileName(entity);
     if (!fs.existsSync(file)) {
-      console.log('jsondb creates db',file);
+      console.log('jsondb creates db', file);
       fs.writeFileSync(file, '{}', 'utf-8');
       database[entity] = {} as TDatabase[K];
     } else {
@@ -43,17 +53,45 @@ function getDb() {
 
   function writeData(entity: TEntity) {
     fs.writeFileSync(getFileName(entity), JSON.stringify(database[entity]), 'utf-8');
-  }  
+  }
 
-  for (let key in database) readData(key as TEntity);     
+  for (let key in database) readData(key as TEntity);
 
   const db = {
-    async list<K extends TEntity>(entity: K, filter?: Partial<EntityDataTypes[K]>): Promise<EntityDataTypes[K][]> {
+    async list<K extends TEntity>(entity: K, filter?: TFilter<K>): Promise<EntityDataTypes[K][]> {
       const items = Object.values(database[entity]) as EntityDataTypes[K][];
       if (!filter || Object.keys(filter).length === 0) return items;
+
       return items.filter((item) => {
-        return Object.entries(filter).every(([key, value]) => {
-          return item[key as keyof EntityDataTypes[K]] === value;
+        return Object.entries(filter).every(([key, filterValue]) => {
+          const itemValue = item[key as keyof EntityDataTypes[K]];
+          if (filterValue && typeof filterValue === 'object' && 'operator' in filterValue && 'value' in filterValue) {
+            const { operator, value } = filterValue as TFilterCondition<K>;
+            switch (operator) {
+              case '==':
+                return itemValue === value;
+              case '!=':
+                return itemValue !== value;
+              case '>':
+                return itemValue > value;
+              case '>=':
+                return itemValue >= value;
+              case '<':
+                return itemValue < value;
+              case '<=':
+                return itemValue <= value;
+              case 'in':
+                return Array.isArray(value) && value.includes(itemValue);
+              case 'array-contains':
+                return Array.isArray(itemValue) && itemValue.includes(value);
+              case 'array-contains-any':
+                return Array.isArray(itemValue) && Array.isArray(value) && value.some((v) => itemValue.includes(v));
+              default:
+                return true;
+            }
+          } else {
+            return itemValue === filterValue;
+          }
         });
       });
     },

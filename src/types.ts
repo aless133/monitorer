@@ -115,3 +115,16 @@ export type EntityDataTypes = {
 };
 
 export type TEntity = keyof EntityDataTypes;
+
+////
+
+export type TFilterOperator = '==' | '!=' | '>' | '>=' | '<' | '<=' | 'in' | 'array-contains' | 'array-contains-any';
+
+export type TFilterCondition<K extends TEntity> = {
+  operator: TFilterOperator;
+  value: any;
+};
+
+export type TFilter<K extends TEntity> = {
+  [P in keyof EntityDataTypes[K]]?: EntityDataTypes[K][P] | TFilterCondition<K>;
+};

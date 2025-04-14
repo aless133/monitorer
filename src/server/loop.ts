@@ -6,10 +6,14 @@ const db=getDB();
 
 async function loopRun() {
   const time = Math.floor(Date.now() / 1000);
-  const targets = (await db.list('targets')).filter((t) => !!t.active && (!t.last_run || t.last_run + t.interval <= time));
   console.log(new Date().toLocaleString(), 'loop');
+  const targets = (await db.list('targets',{active:true})).filter((t) => (!t.last_run || t.last_run + t.interval <= time));
+  if (!targets.length) {
+    console.log('tagets empty');
+    return;
+  }
 
-  const allLots = await db.list('lots');
+  const allLots = await db.list('lots',{target:{operator:'in',value:targets.map(t=>t.id)}});
 
   targets.forEach(async (target) => {
     const src = getSource(target.source);

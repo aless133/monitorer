@@ -1,17 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { TEntity, EntityDataTypes, EntitySchemas, EntityCreateSchemas, TTarget, TLot, THistory } from '@/types.ts';
+import { TEntity, EntityDataTypes, EntitySchemas, EntityCreateSchemas, TFilter } from '@/types.ts';
 import { MonitorerError } from '@/server/error.ts';
 import { initializeApp, cert, ServiceAccount } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 // import { getDatabase } from 'firebase-admin/database';
 // import serviceAccount from '@/server/monitorer-service-account.json' with { type: 'json' };
 
-console.trace('firebase');
-
 function getDb() {
-  console.trace('firebase getDb');
+  console.log('firebase getDb');
 
   const firebase = initializeApp({
     credential: cert({
@@ -23,14 +21,33 @@ function getDb() {
   
   const database = getFirestore(firebase);
 
+  // async function testExplain() {
+  //   const query = database.collection("targets").limit(10); // Simple query
+  //   const explainResult = await query.explain({analyze: true});
+    
+  //   console.dir("Does explain() work?",explainResult, {
+  //     metricsExist: !!explainResult.metrics,
+  //     readOps: explainResult.metrics?.executionStats?.readOperations,
+  //   });
+  // }
+  
+  // testExplain().catch(console.error);  
+
   const db = {
-    async list<K extends TEntity>(entity: K, filter?: Partial<EntityDataTypes[K]>): Promise<EntityDataTypes[K][]> {
+    async list<K extends TEntity>(entity: K, filter?: TFilter<K>): Promise<EntityDataTypes[K][]> {
       let query: FirebaseFirestore.Query = database.collection(entity);
       if (filter && Object.keys(filter).length > 0) {
         Object.entries(filter).forEach(([key, value]) => {
-          query = query.where(key, '==', value);
+          if (value && typeof value === 'object' && 'operator' in value && 'value' in value) {
+            query = query.where(key, value.operator, value.value);
+          } else {
+            query = query.where(key, '==', value);
+          }
         });
       }
+      const explainResult = await query.explain({analyze: true});
+      console.log("frestore.list",entity,filter);
+      console.dir(explainResult.metrics.executionStats,{depth:3});
       const snapshot = await query.get();
       return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as EntityDataTypes[K]));
     },
