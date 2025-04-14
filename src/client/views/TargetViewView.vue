@@ -33,7 +33,11 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
       <ul v-if="lots" class="list bg-base-100 rounded-box shadow-md text-base px-4">
         <li v-for="lot in lots" :key="lot.id" class="list-row">
           <div class="font-bold"> {{ lot.key }}</div>
-          <pre class="bg-base-300 text-black !my-0">{{ JSON.stringify(lot.data, null, 2) }}</pre>
+          <div class="bg-base-300 text-black p-2">
+            <div v-for="(v,k) in lot.data" :key="k">
+              {{ k }}: {{ v }}
+            </div>
+          </div>
         </li>
       </ul>
     </div>
