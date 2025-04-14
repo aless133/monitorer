@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import { TEntity, EntityDataTypes, EntitySchemas, EntityCreateSchemas, TFilter } from '@/types.ts';
 import { MonitorerError } from '@/server/error.ts';
 import { initializeApp, cert, ServiceAccount } from 'firebase-admin/app';

@@ -3,14 +3,17 @@ import getStorage from '@/server/storage/storage.ts';
 import type { TEntity } from '@/types.ts';
 import { EntitySchemas, EntityCreateSchemas } from '@/types.ts';
 import { MonitorerError } from './error.ts';
+import { authGuard } from './auth.ts';
 
 const storage = getStorage();
 
 export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', 'create', 'update', 'delete']) {
   const router = express.Router();
-  router.use(express.json());
   const schema = EntitySchemas[entity];
   const schemaCreate = EntityCreateSchemas[entity];
+
+  router.use(express.json());
+  router.use(authGuard);
 
   if (methods.includes('list')) {
     router.get('/', async (req, res) => {

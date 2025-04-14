@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-if (!import.meta.env)
-  dotenv.config();
 const env = import.meta.env ? import.meta.env : process.env;
 
 export const apiUrl = env.MONITORER_API_URL;
