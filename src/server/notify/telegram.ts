@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import https from 'node:https';
 
 const token = process.env.TELEGRAM_BOT_TOKEN;

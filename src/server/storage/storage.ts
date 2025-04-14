@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import getJsonDB from '@/server/storage/json-db.ts';
 import getFirestoreDB from '@/server/storage/firestore.ts';
 
