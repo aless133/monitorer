@@ -38,7 +38,7 @@ function request(method:string, data: any) {
   });
 
   req.on('error', (error) => {
-    console.error('Telegram request error:', error.message);
+    console.error('Telegram request error:', error);
   });
 
   req.write(postData);
