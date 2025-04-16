@@ -99,7 +99,7 @@ function getDb() {
     async get<K extends TEntity>(entity: K, id: string) {
       if (!id) throw new MonitorerError('get: No id', { entity, id });
       if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
-      return { ...database[entity][id] };
+      return { ...database[entity][id] } as EntityDataTypes[K];
     },
 
     async create<K extends TEntity>(entity: K, data: Omit<EntityDataTypes[K], 'id'>) {
@@ -108,7 +108,7 @@ function getDb() {
       const id = randomUUID();
       database[entity][id] = { ...data, id } as EntityDataTypes[K];
       writeData(entity);
-      return { ...database[entity][id] };
+      return { ...database[entity][id] } as EntityDataTypes[K];
     },
 
     async update<K extends TEntity>(entity: K, id: string, data: Partial<EntityDataTypes[K]>) {
@@ -119,7 +119,7 @@ function getDb() {
       if (!database[entity][id]) throw new MonitorerError('Entity not found', { entity, id });
       database[entity][id] = updatedEntity;
       writeData(entity);
-      return { ...database[entity][id] };
+      return { ...database[entity][id] } as EntityDataTypes[K];
     },
 
     async delete(entity: TEntity, id: string) {

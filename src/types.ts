@@ -56,6 +56,27 @@ export type TLotNew = Omit<TLot, 'id'>;
 
 ///////
 
+export const HistoryCreateSchema = z.object({
+  dt: z.number().int().nonnegative().optional(),
+  target: z.string(),
+  lot: z.string(),
+  key: z.string(),
+  old: LotDataScheme,
+  new: LotDataScheme,  
+});
+
+export const HistorySchema = LotCreateSchema.extend({ id: z.string() });
+
+export type THistory = {
+  id: string;
+  dt: number;
+  target: string;
+  lot: string;
+  key: string; //избыточно, но удобно для отображения
+  old?: TLotData;
+  new?: TLotData; 
+};
+
 export type TChanges = {
   added: TLotNew[];
   removed: TLot[];
@@ -65,36 +86,6 @@ export type TChanges = {
     old: TLotData;
     new: TLotData;
   }>;
-};
-
-export const ChangesSchema = z.object({
-  added: z.array(LotCreateSchema),
-  removed: z.array(LotSchema),
-  updated: z.array(
-    z.object({
-      id: z.string(),
-      key: z.string(),
-      old: LotDataScheme,
-      new: LotDataScheme,
-    })
-  ),
-});
-
-//////
-
-export const HistoryCreateSchema = z.object({
-  dt: z.number().int().nonnegative().optional(),
-  target: z.string(),
-  changes: ChangesSchema,
-});
-
-export const HistorySchema = LotCreateSchema.extend({ id: z.string() });
-
-export type THistory = {
-  id: string;
-  dt: number;
-  target: string;
-  changes: TChanges;
 };
 
 //////
