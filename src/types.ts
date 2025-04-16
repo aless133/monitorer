@@ -61,8 +61,8 @@ export const HistoryCreateSchema = z.object({
   target: z.string(),
   lot: z.string(),
   key: z.string(),
-  old: LotDataScheme,
-  new: LotDataScheme,  
+  old: LotDataScheme.optional(),
+  new: LotDataScheme.optional(),  
 });
 
 export const HistorySchema = LotCreateSchema.extend({ id: z.string() });
