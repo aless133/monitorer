@@ -1,5 +1,5 @@
-import { fetchHtml } from '@/server/utils.ts';
-import { TLot } from '@/types.ts';
+import type { TLot } from "@/types.ts";
+import { fetchHtml } from "@/server/utils.ts";
 
 const url = 'https://outvin.com';
 const src = {
