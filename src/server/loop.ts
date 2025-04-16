@@ -9,7 +9,7 @@ async function loopRun() {
   console.log(new Date().toLocaleString(), 'loop');
   const targets = await db.list('targets', { active: true, next_run: { operator: '<=', value: time } });
   if (!targets.length) {
-    console.log('tagets empty');
+    console.log('targets empty');
     return;
   }
 
