@@ -121,3 +121,13 @@ export type TFilterCondition<K extends TEntity> = {
 export type TFilter<K extends TEntity> = {
   [P in keyof EntityDataTypes[K]]?: EntityDataTypes[K][P] | TFilterCondition<K>;
 };
+
+
+///////////////
+
+export type TContext = {
+  executionId: string;
+  startTime: Date;
+  // targets: TTarget[];
+  // lots: TLot[];
+};

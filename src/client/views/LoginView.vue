@@ -34,7 +34,7 @@ const submitLogin = async () => {
       <div class="card-body gap-8">
         <h1 class="card-title justify-center text-3xl">
           Вход в систему
-        </h1>      
+        </h1>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">Пароль</legend>
           <input :class="`input input-bordered w-full ${error ? 'input-error' : ''}`" id="password" v-model="password"

@@ -1,4 +1,4 @@
-import https from 'node:https';
+import { c } from '@/helpers.ts';
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -17,14 +17,15 @@ async function request(method: string, data: any) {
     });
 
     if (!response.ok) {
+      c.error('HTTP error!', response.status, response);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const json = await response.json();
     if (json.ok === true) {
-      console.info("Telegram request was successful!");
-      if (process.env.NODE_ENV !== "prod") console.info(json);
+      c.log('Telegram request was successful!');
+      // if (process.env.NODE_ENV !== "prod") console.info(json);
     } else {
-      console.error("Telegram request failed. Check the response:", json);
+      c.error('Telegram request failed. Check the response:', json);
     }
     return json;
   } catch (error) {
@@ -33,11 +34,10 @@ async function request(method: string, data: any) {
 }
 
 function sendMessage(text: string) {
-  console.log(token,chatId);
   return request('sendMessage', {
     chat_id: chatId,
-    text: text.replace(/[_*[\]()~`>#+-=|{}.!]/g, '\\$&'),
-    parse_mode: 'MarkdownV2',
+    text,
+    parse_mode: 'HTML',
   });
 }
 

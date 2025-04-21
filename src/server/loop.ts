@@ -1,86 +1,82 @@
 import getDB from '@/server/storage/storage.ts';
 import { getSource } from '@/server/sources/sources.ts';
-import { TChanges, THistory, TLot, TLotNew, TTarget } from '@/types.ts';
-import { notify as telegramNotify } from '@/server/notify/telegram.ts';
+import { c, time } from '@/helpers.ts';
+import { TChanges, THistory, TLot, TLotData, TLotNew, TTarget } from '@/types.ts';
+import { notify } from './notify/notify.ts';
 const db = getDB();
 
 async function loopRun() {
-  const time = Math.floor(Date.now() / 1000);
-  console.log(new Date().toLocaleString(), 'loop');
-  const targets = await db.list('targets', { active: true, next_run: { operator: '<=', value: time } });
+  const now = time();
+  c.log('loop');
+  const targets = await db.list('targets', { active: true, next_run: { operator: '<=', value: now } });
   if (!targets.length) {
-    console.log('targets empty');
+    c.log('targets empty');
     return;
   }
-
-  const allLots = await db.list('lots', { target: { operator: 'in', value: targets.map((t) => t.id) } });
-
+  const lots = await db.list('lots', { target: { operator: 'in', value: targets.map((t) => t.id) } });
   targets.forEach(async (target) => {
     const src = getSource(target.source);
-    const lots = allLots.filter((l) => l.target === target.id);
-    if (src) {
-      try {
-        const now = Math.floor(Date.now() / 1000);
-        const targetUpdate: Partial<TTarget> = { last_run: now, next_run: now + target.interval };
-        const res = await src.run(target.url);
-        console.log('res', res);
-        res.forEach((r) => {
-          r.target = target.id;
+    const tLots = lots.filter((l) => l.target === target.id);
+    if (!src) {
+      c.error('Source not found', target);
+      return;
+    }
+    try {
+      const targetUpdate: Partial<TTarget> = { last_run: now, next_run: now + target.interval };
+      const res = await src.run(target.url);
+      res.forEach((r) => {
+        r.target = target.id;
+      });
+      if (tLots.length == 0) {
+        notify(target.source + ' 1st run, adding ' + res.length);
+        res.forEach(async (r) => {
+          await db.create('lots', r);
         });
-        if (lots.length == 0) {
-          notify(target, '1st run, adding', res.length);
-          res.forEach(async (r) => {
-            await db.create('lots', r);
+      } else {
+        const changes = findChanges(tLots, res);
+        changes.added.forEach(async (c, i) => {
+          const lot = await db.create('lots', c);
+          const hist = await db.create('history', {
+            dt: now,
+            target: target.id,
+            lot: lot.id,
+            key: lot.key,
+            new: lot.data,
           });
-        } else {
-          const changes = findChanges(lots, res);
-          changes.added.forEach(async (c, i) => {
-            const lot = await db.create('lots', c);
-            const hist = await db.create('history', {
-              dt: now,
-              target: target.id,
-              lot: lot.id,
-              key: lot.key,
-              new: lot.data,
-            });
-            notifyHist(target, hist);
+          notifyHist(target, hist);
+        });
+        changes.removed.forEach(async (c) => {
+          const hist = await db.create('history', {
+            dt: now,
+            target: target.id,
+            lot: c.id,
+            key: c.key,
+            old: c.data,
           });
-          changes.removed.forEach(async (c) => {
-            const hist = await db.create('history', {
-              dt: now,
-              target: target.id,
-              lot: c.id,
-              key: c.key,
-              old: c.data,
-            });
-            await db.delete('lots', c.id);
-            notifyHist(target, hist);
+          await db.delete('lots', c.id);
+          notifyHist(target, hist);
+        });
+        changes.updated.forEach(async (c) => {
+          const hist = await db.create('history', {
+            dt: now,
+            target: target.id,
+            lot: c.id,
+            key: c.key,
+            old: c.old,
+            new: c.new,
           });
-          changes.updated.forEach(async (c) => {
-            const hist = await db.create('history', {
-              dt: now,
-              target: target.id,
-              lot: c.id,
-              key: c.key,
-              old: c.old,
-              new: c.new,
-            });
-            await db.update('lots', c.id, { data: c.new });
-            notifyHist(target, hist);
-          });
-          if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
-            console.log(target.source, 'nothing changed');
-          else {
-            targetUpdate.last_update = now;
-          }
+          await db.update('lots', c.id, { data: c.new });
+          notifyHist(target, hist);
+        });
+        if (changes.added.length == 0 && changes.removed.length == 0 && changes.updated.length == 0)
+          c.log(target.source,'nothing changed');
+        else {
+          targetUpdate.last_update = now;
         }
-        console.log('targetUpdate', targetUpdate);
-        db.update('targets', target.id, targetUpdate);
-      } catch (err) {
-        console.error('looo... oops', err);
       }
-    } else {
-      console.error('Source not found', target.id, target.source);
+      db.update('targets', target.id, targetUpdate);
+    } catch (err) {
+      c.error('looo... oops', err);
     }
   });
 }
@@ -102,25 +98,33 @@ function findChanges(oldData: TLot[], newData: TLotNew[]) {
   oldData.forEach((oldItem) => {
     const newItem = newMap.get(oldItem.key);
     if (newItem && JSON.stringify(oldItem.data) !== JSON.stringify(newItem.data))
-        changes.updated.push({
-          id: oldItem.id,
-          key: oldItem.key,
-          old: oldItem.data,
-          new: newItem.data,
-        });
+      changes.updated.push({
+        id: oldItem.id,
+        key: oldItem.key,
+        old: oldItem.data,
+        new: newItem.data,
+      });
   });
   return changes;
 }
 
-function notify(target: TTarget, text: string, data?: any) {
-  console.log(new Date().toLocaleString(), target.id, target.source, target.url, text, data);
-  const n = { text, target, data };
-  telegramNotify(JSON.stringify(n));
-}
+export { loopRun };
 
 function notifyHist(target: TTarget, hist: THistory) {
-  const n = { target, hist };
-  telegramNotify(JSON.stringify(n));
+  let c = `<b>${target.source}</b> `;
+  if (!hist.old && hist.new) c += `${hist.key} added <br>` + histData(hist.new);
+  else if (hist.old && !hist.new) c += `${hist.key} removed <br>` + histData(hist.old);
+  else if (hist.old && hist.new) c += `${hist.key} changed <br>` + histChange(hist.old, hist.new);
+  notify(c);
 }
 
-export { loopRun };
+function histData(data: TLotData) {
+  return Object.entries(data)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('<br');
+}
+function histChange(o: TLotData, n: TLotData) {
+  return Object.entries(o)
+    .map(([k, v]) => `${k}: ${v} => ${n[k]}`)
+    .join('<br');
+}
