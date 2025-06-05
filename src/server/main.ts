@@ -2,12 +2,14 @@ import 'dotenv/config';
 import express from 'express';
 import ViteExpress from 'vite-express';
 import { getSession, authRouter } from '@/server/auth.ts';
-import { apiRouter } from '@/server/api.ts';
+import { crudRouter } from '@/server/router/crud.ts';
+import { targetRouter } from './router/target.ts';
 import { errorHandler } from '@/server/error.ts';
 import { loopRun } from '@/server/loop.ts';
 import { loopInterval } from '@/globals.ts';
 import { c } from '@/helpers.ts';
 import { contextCreate, contextStorage, contextStore } from '@/server/context.ts';
+
 
 const app = express();
 app.use(getSession());
@@ -24,9 +26,10 @@ app.use('/api', (req, res, next) => {
 });
 
 app.use('/api', authRouter());
-app.use('/api/targets', apiRouter('targets'));
-app.use('/api/lots', apiRouter('lots', ['list', 'get']));
-app.use('/api/history', apiRouter('history', ['list', 'get']));
+app.use('/api/target', targetRouter());
+app.use('/api/targets', crudRouter('targets'));
+app.use('/api/lots', crudRouter('lots', ['list', 'get']));
+app.use('/api/history', crudRouter('history', ['list', 'get']));
 app.use(errorHandler);
 
 contextStorage.run(contextCreate(), async () => {

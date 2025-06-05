@@ -4,6 +4,7 @@ import { refetchInterval } from "@/globals";
 import Indicator from "@/client/ui/Indicator.vue";
 import Time from "@/client/ui/Time.vue";
 import { useQueryList, useMutationUpdate } from '@/client/query/common'
+import { useMutationTargetRun } from "@/client/query/target";
 const { data: targets, isPending, error } = useQueryList<TTarget>("targets", undefined, { refetchInterval });
 
 const update = useMutationUpdate<TTarget>("targets");
@@ -11,6 +12,10 @@ async function toggleActive(target: TTarget) {
   update.mutate({ id: target.id, data: { active: !target.active } })
 };
 
+const { mutate: runTarget, isPending: isRunning } = useMutationTargetRun();
+const handleRun = (targetId: string) => {
+  runTarget({ id: targetId });
+};
 
 </script>
 
@@ -24,15 +29,22 @@ async function toggleActive(target: TTarget) {
       </div>
       <ul class="list text-base box1-inner !py-0 !px-2">
         <li v-for="target in targets" :key="target.id" class="list-row flex flex-wrap">
-          <RouterLink :to="{ name: 'target-view', params: {id:target.id} }" class="btn btn-square btn-ghost">
+          <RouterLink :to="{ name: 'target-view', params: { id: target.id } }" class="btn btn-square btn-ghost">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
               stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round"
                 d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
             </svg>
           </RouterLink>
+          <button @click="handleRun(target.id)" :disabled="isRunning" class="btn btn-square btn-ghost">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+            </svg>
+          </button>
           <div class="grow-1">
-            <div class="font-semibold text-xl">{{ target.source }}</div>
+            <div class="font-semibold text-xl mt-1">{{ target.source }}</div>
             <div v-if="target.url" class="break-all opacity-60">{{ target.url }}</div>
             <a v-if="target.url" :href="target.url">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -42,12 +54,13 @@ async function toggleActive(target: TTarget) {
               </svg>
             </a>
           </div>
-          <div class="w-full sm:w-auto">
+          <div class="w-full sm:w-auto mt-1">
             Интервал: {{ target.interval }}<br>
             Запущено: <Time :time="target.last_run" /><br>
             Следующий: <Time :time="target.next_run" />
           </div>
-          <RouterLink :to="{ name: 'target-update', params: {id:target.id} }" class="btn btn-square btn-ghost ms-auto sm:ms-0">
+          <RouterLink :to="{ name: 'target-update', params: { id: target.id } }"
+            class="btn btn-square btn-ghost ms-auto sm:ms-0">
             <svg class="size-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
               stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round"

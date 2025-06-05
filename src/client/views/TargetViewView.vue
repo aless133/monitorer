@@ -6,11 +6,17 @@ import History from "@/client/components/History.vue";
 import { useQueryList, useQueryOne } from '@/client/query/common'
 import { useRoute, useRouter } from 'vue-router';
 import type { TLot, TTarget } from "@/types";
+import { useMutationTargetRun } from "@/client/query/target";
 
 const route = useRoute();
 const targetId = route.params.id as string;
 const { data: target, isPending: targetIsPending, error: targetError } = useQueryOne<TTarget>("targets", targetId);
 const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList<TLot>("lots", { target: targetId });
+
+const { mutate: runTarget, isPending: isRunning } = useMutationTargetRun();
+const handleRun = (targetId: string) => {
+  runTarget({ id: targetId });
+};
 
 </script>
 
@@ -25,8 +31,9 @@ const { data: lots, isPending: lotsIsPending, error: lotsErrors } = useQueryList
         <div>Следующий: <Time :time="target.next_run" /></div>
         <div>Обновлено: <Time :time="target.last_update" /></div>
       </div>
-      <div>
+      <div class="flex flex-col gap-4">
         <RouterLink :to="{ name: 'home' }" class="btn btn-neutral">Закрыть</RouterLink>
+        <button @click="handleRun(target.id)" :disabled="isRunning" class="btn btn-primary">Запустить</button>
       </div>
     </div>
     <div v-if="lots" class="box1">

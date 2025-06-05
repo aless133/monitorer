@@ -2,12 +2,12 @@ import express from 'express';
 import getStorage from '@/server/storage/storage.ts';
 import type { TEntity } from '@/types.ts';
 import { EntitySchemas, EntityCreateSchemas } from '@/types.ts';
-import { MonitorerError } from './error.ts';
-import { authGuard } from './auth.ts';
+import { MonitorerError } from '@/server/error.ts';
+import { authGuard } from '@/server/auth.ts';
 
 const storage = getStorage();
 
-export function apiRouter(entity: TEntity, methods: string[] = ['list', 'get', 'create', 'update', 'delete']) {
+export function crudRouter(entity: TEntity, methods: string[] = ['list', 'get', 'create', 'update', 'delete']) {
   const router = express.Router();
   const schema = EntitySchemas[entity];
   const schemaCreate = EntityCreateSchemas[entity];
