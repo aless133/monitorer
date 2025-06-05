@@ -16,17 +16,9 @@ export const useMutationTargetRun = () => {
         method: 'POST',
       });
     },
-    onSuccess: () => {
-      console.log('useMutationTargetRun invalidate');
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['targets'] });
       queryClient.invalidateQueries({ queryKey: ['history'] });
     },
-    onError: (error) => {
-      console.error('Mutation error:', error);
-    },
-    onSettled: () => {
-      // This runs after success or error
-      console.log('Mutation settled');
-    }    
   });
 };

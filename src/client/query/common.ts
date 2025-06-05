@@ -92,7 +92,7 @@ export const useMutationCreate = <T>(key: string) => {
         body: JSON.stringify(data),
       });
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [key] });
     },
   });
@@ -111,7 +111,7 @@ export const useMutationUpdate = <T>(key: string) => {
         body: JSON.stringify(data.data),
       });
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [key] });
     },
   });
@@ -126,7 +126,7 @@ export const useMutationDelete = (key: string) => {
         method: 'DELETE',
       });
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [key] });
     },
   });
