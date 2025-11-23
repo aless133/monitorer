@@ -1,12 +1,6 @@
 import type { TLot } from '@/types.ts';
 import { fetchJson } from '@/server/utils.ts';
-// import { createHash } from 'crypto';
-let crypto:any = null;
-
-const isServer = typeof window === 'undefined';
-if (isServer) {
-  crypto = await import('crypto');
-}
+import md5 from 'blueimp-md5';
 
 const url = 'https://vagvin.ru/static/brands.json';
 const src = {
@@ -22,7 +16,7 @@ async function run() {
   // console.log(Array.isArray(data.subchecks.data));
   data.subchecks.data.forEach((el: { availableBrands: any; languages: any; commands: any }) => {
     lots.push({
-      key: crypto.createHash('md5').update(JSON.stringify(el)).digest('hex'),
+      key: md5(JSON.stringify(el)),
       data: {
         availableBrands: el.availableBrands,
         languages: el.languages,
