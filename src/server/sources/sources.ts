@@ -4,8 +4,9 @@ import outvin from '@/server/sources/outvin.ts';
 import partslink24 from '@/server/sources/partslink24.ts';
 import kursonliner from '@/server/sources/kurs-onliner.ts';
 import myfinrates from '@/server/sources/myfin-rates.ts';
+import vinvag from '@/server/sources/vinvag.ts';
 
-const registeredSources = [kufar, outvin, partslink24, kursonliner, myfinrates];
+const registeredSources = [kufar, outvin, partslink24, kursonliner, myfinrates, vinvag];
 
 export function getSources(): ISource[] {
   return registeredSources;
