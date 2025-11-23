@@ -17,14 +17,15 @@ async function request(method: string, data: any) {
     });
 
     if (!response.ok) {
-      c.error('HTTP error!', response.status, response);
+      const responseText = await response.text();
+      c.error('HTTP error!', response.status, response, responseText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const json = await response.json();
     if (json.ok === true) {
       c.log('Telegram request was successful!');
       // if (process.env.NODE_ENV !== "prod") console.info(json);
-    } else {
+    } else {      
       c.error('Telegram request failed. Check the response:', json);
     }
     return json;

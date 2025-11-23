@@ -130,10 +130,10 @@ function notifyHist(target: TTarget, hist: THistory) {
 function histData(data: TLotData) {
   return Object.entries(data)
     .map(([k, v]) => `${k}: ${v}`)
-    .join('<br');
+    .join('<br>');
 }
 function histChange(o: TLotData, n: TLotData) {
   return Object.entries(o)
     .map(([k, v]) => `${k}: ${v} => ${n[k]}`)
-    .join('<br');
+    .join('<br>');
 }

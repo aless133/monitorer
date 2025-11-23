@@ -1,19 +1,14 @@
 import * as cheerio from 'cheerio';
 
-interface FetchResult {
-  $: cheerio.CheerioAPI;
-  html: string;
-  url: string;
-  status: number;
-}
+//common method
 
-export async function fetchHtml(
+export async function fetchUrl(
   url: string,
   options: {
     timeout?: number;
     headers?: Record<string, string>;
   } = {}
-): Promise<FetchResult> {
+): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), options.timeout ?? 5000);
 
@@ -30,6 +25,33 @@ export async function fetchHtml(
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} ${response.statusText}`);
     }
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    // console.error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+////////////////
+
+interface FetchHtmlResult {
+  $: cheerio.CheerioAPI;
+  html: string;
+  url: string;
+  status: number;
+}
+
+export async function fetchHtml(
+  url: string,
+  options: {
+    timeout?: number;
+    headers?: Record<string, string>;
+  } = {}
+): Promise<FetchHtmlResult> {
+
+  try {
+    const response = await fetchUrl(url,options);
 
     const contentType = response.headers.get('content-type');
     if (!contentType?.includes('text/html')) {
@@ -41,12 +63,46 @@ export async function fetchHtml(
     return {
       $,
       html,
-      url: response.url, // Final URL after redirects
+      url: response.url,
       status: response.status,
     };
   } catch (error) {
-    clearTimeout(timeoutId);
-    // console.error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`);
-    throw new Error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(`Failed to fetchHtml ${url}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+//////////////
+
+interface FetchJsonResult {
+  data: any;
+  url: string;
+  status: number;
+}
+
+export async function fetchJson(
+  url: string,
+  options: {
+    timeout?: number;
+    headers?: Record<string, string>;
+  } = {}
+): Promise<FetchJsonResult> {
+
+  try {
+    const response = await fetchUrl(url,options);
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      throw new Error(`Invalid content type: ${contentType}`);
+    }
+
+    const json=await response.json();
+
+    return {
+      data:json,
+      url: response.url,
+      status: response.status,
+    };
+  } catch (error) {
+    throw new Error(`Failed to fetchJson ${url}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
