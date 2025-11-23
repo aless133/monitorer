@@ -1,10 +1,18 @@
 <?
 namespace a133\monitorer;
+use a133\env\Env;
+
+include __DIR__.'/Env.php';
+
 
 class Monitorer {
 
 	public $dataDir=__DIR__;
 	public $watches=[];
+	public $data=[];
+	public $dataFile='';
+	public $notifierToken;
+	public $notifierChat;
 
 	function __construct($cfg=[]) {
 		foreach ($cfg as $k=>$v)
@@ -12,6 +20,8 @@ class Monitorer {
 		$this->dataFile=$this->dataDir.'/monitorer.data';
 		if (file_exists($this->dataFile))
 			$this->data=json_decode(file_get_contents($this->dataFile),1);
+		$this->notifierToken=Env::get('TELEGRAM_BOT_TOKEN');
+		$this->notifierChat=Env::get('TELEGRAM_CHAT_ID');
 	}
 
 	public function check() {
@@ -34,9 +44,6 @@ class Monitorer {
 		}
 		return $notify;
 	}
-
-	public $notifierToken="1999715522:AAHS8pZ7uqhZD6EcRzM2zZQj622WwrKYt88";
-	public $notifierChat="-534524142";
 
 	public function notify($notify) {
 		$text='';
